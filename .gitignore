@@ -1,2 +1,7 @@
 # Project exclude paths
+/.idea/
 /target/
+/core.jar
+/gluegen-rt.jar
+/jogl-all.jar
+/pom.xml

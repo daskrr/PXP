@@ -10,4 +10,9 @@ public class Vector2
         this.x = x;
         this.y = y;
     }
+
+    @Override
+    public String toString() {
+        return "Vector2[" + x + ", " + y + "]";
+    }
 }
