@@ -2,6 +2,7 @@ package net.daskrr.cmgt.pxp.core.component;
 
 import net.daskrr.cmgt.pxp.core.GameObject;
 import net.daskrr.cmgt.pxp.core.GameProcess;
+import net.daskrr.cmgt.pxp.core.Transform;
 import processing.core.PConstants;
 
 public class Component implements PConstants
@@ -38,6 +39,14 @@ public class Component implements PConstants
         return GameProcess.getInstance();
     }
 
+    public final Transform transform() {
+        return gameObject.transform;
+    }
+
+    /**
+     * Instantiates a GameObject into the current Scene
+     * @param gameObject the GameObject to be placed in the Scene
+     */
     public final void Instantiate(GameObject gameObject) {
         ctx().getCurrentScene().addGameObject(gameObject);
     }

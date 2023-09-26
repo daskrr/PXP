@@ -10,6 +10,10 @@ public class Vector2
         this.x = x;
         this.y = y;
     }
+    public Vector2(Vector2 vec) {
+        this.x = vec.x;
+        this.y = vec.y;
+    }
 
     @Override
     public String toString() {

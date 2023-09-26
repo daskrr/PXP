@@ -1,19 +1,35 @@
 package net.daskrr.cmgt.pxp.core;
 
-import java.util.*;
+import net.daskrr.cmgt.pxp.core.component.Camera;
+import net.daskrr.cmgt.pxp.data.GameObjectSupplier;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class Scene
 {
-    public final List<GameObject> objects;
+    private final GameObjectSupplier[] gameObjectSuppliers;
+
+    public final List<GameObject> objects = new ArrayList<>();
 
     public final List<List<GameObject>> objectsByLayer = new ArrayList<>();
 
-    public Scene(GameObject[] gameObjects) {
-        this.objects = new ArrayList<>(List.of(gameObjects));
+    private Camera mainCam;
+
+    /**
+     * Creates a new scene to be used in the game
+     * @param gameObjectSuppliers The GameObject (preferably lambda) suppliers
+     */
+    public Scene(GameObjectSupplier[] gameObjectSuppliers) {
+        this.gameObjectSuppliers = gameObjectSuppliers;
     }
 
     public void load() {
-        for (GameObject go : objects) {
+        for (GameObjectSupplier supplier : gameObjectSuppliers) {
+            GameObject go = supplier.get();
+            objects.add(go);
+
             // arrange game objects into sorting layers
             registerSortingLayer(go);
 
@@ -46,12 +62,33 @@ public class Scene
         });
     }
 
+    public Camera getCamera() throws Exception {
+        if (mainCam != null)
+            return mainCam;
+
+        for (GameObject object : objects) {
+            mainCam = object.getComponentOfType(Camera.class);
+            if (mainCam != null)
+                return mainCam;
+        }
+
+        throw new Exception("The scene doesn't contain a camera!");
+    }
+
     public void addGameObject(GameObject gameObject) {
         objects.add(gameObject);
 
         registerSortingLayer(gameObject);
 
         gameObject.load();
+    }
+
+    public GameObject getGameObject(String name) {
+        for (GameObject go : objects)
+            if (go.name.equals(name))
+                return go;
+
+        return null;
     }
 
     public void removeGameObject(GameObject gameObject) {
@@ -64,5 +101,8 @@ public class Scene
     public void destroy() {
         for (GameObject go : objects)
             go.destroy();
+
+        objects.clear();
+        objectsByLayer.clear();
     }
 }

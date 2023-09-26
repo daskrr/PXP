@@ -1,14 +1,15 @@
 package net.daskrr.cmgt.pxp.core;
 
+import net.daskrr.cmgt.pxp.core.component.Camera;
 import net.daskrr.cmgt.pxp.data.GameSettings;
+import net.daskrr.cmgt.pxp.data.Input;
+import net.daskrr.cmgt.pxp.data.Key;
+import net.daskrr.cmgt.pxp.data.MouseButton;
 import net.daskrr.cmgt.pxp.data.assets.AssetManager;
 import processing.core.PApplet;
 import processing.opengl.PGraphicsOpenGL;
-import processing.opengl.Texture;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class GameProcess extends PApplet
 {
@@ -17,9 +18,11 @@ public class GameProcess extends PApplet
         return instance;
     }
 
-    protected GameSettings settings;
-    private Scene[] scenes;
+    public GameSettings settings;
+    private final Scene[] scenes;
     private int currentScene = 0;
+
+    private boolean finishSetup = false;
 
     /**
      * GameProcess & main PApplet -> is the entry point of the application and handles everything
@@ -56,21 +59,38 @@ public class GameProcess extends PApplet
 
         // load first scene
         getCurrentScene().load();
+
+        Time.lastTime = millis() / 1000f;
+        Time.deltaTime = 0f;
+
+        this.finishSetup = true;
     }
 
     @Override
     public void draw() {
+        if (!finishSetup) return;
+
         Time.newFrame();
         // update method
         for (GameObject go : getCurrentScene().objects)
             go.draw();
 
         render();
+        Input.reset();
     }
 
     private void render() {
         // refresh background
         background(this.settings.background.getHex());
+
+        try {
+            Camera cam = getCurrentScene().getCamera();
+            cam.applyCamera();
+        }
+        catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.exit(0);
+        }
 
         for (List<GameObject> layer : getCurrentScene().objectsByLayer)
             for (GameObject go : layer)
@@ -84,6 +104,48 @@ public class GameProcess extends PApplet
     protected void run() {
         String[] args = new String[] { this.getClass().getName() };
         runSketch(args, this);
+    }
+
+    @Override
+    public void mouseClicked() {
+        MouseButton button = MouseButton.fromCode(mouseButton);
+        if (button == null)
+            return;
+
+        Input.mouseButtonsClicked[button.ordinal()] = button;
+    }
+    @Override
+    public void mousePressed() {
+        MouseButton button = MouseButton.fromCode(mouseButton);
+        if (button == null)
+            return;
+
+        Input.mouseButtons[button.ordinal()] = button;
+    }
+    @Override
+    public void mouseReleased() {
+        MouseButton button = MouseButton.fromCode(mouseButton);
+        if (button == null)
+            return;
+
+        Input.mouseButtons[button.ordinal()] = null;
+    }
+
+    @Override
+    public void keyPressed() {
+        Key key = Key.fromCode(keyCode);
+        if (key == null)
+            return;
+
+        Input.keys[key.ordinal()] = key;
+    }
+    @Override
+    public void keyReleased() {
+        Key key = Key.fromCode(keyCode);
+        if (key == null)
+            return;
+
+        Input.keys[key.ordinal()] = null;
     }
 
     public Scene getCurrentScene() {

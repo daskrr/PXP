@@ -2,12 +2,21 @@ package net.daskrr.cmgt.pxp.core;
 
 public class Time
 {
-    protected static int lastTime = 0;
-    public static int deltaTime = 0;
+    /**
+     * Last Frame Time in seconds
+     */
+    protected static float lastTime = 0f;
+    /**
+     * Delta Time in seconds
+     */
+    public static float deltaTime = 0f;
 
+    /**
+     * Calculates delta time for new frame
+     */
     protected static void newFrame() {
         // calculate delta time
-        deltaTime = GameProcess.getInstance().millis() - lastTime;
-        lastTime = GameProcess.getInstance().millis();
+        deltaTime = GameProcess.getInstance().millis() / 1000f - lastTime;
+        lastTime = GameProcess.getInstance().millis() / 1000f;
     }
 }
