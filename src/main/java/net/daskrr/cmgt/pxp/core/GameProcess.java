@@ -11,21 +11,46 @@ import processing.opengl.PGraphicsOpenGL;
 
 import java.util.List;
 
+/**
+ * The Game Process is the "trunk" of the game application, from where systems are started, assets imported, scenes loaded...<br/>
+ * The Game Process extends PApplet (the processing application "trunk")
+ * @see PApplet
+ */
 public class GameProcess extends PApplet
 {
+    /**
+     * The instance of the GameProcess (works as singleton, too)
+     */
     private static GameProcess instance;
+    /**
+     * Gets the instance of the GameProcess, can be used almost anywhere
+     * @return the instance of the game process
+     */
     public static GameProcess getInstance() {
         return instance;
     }
 
-    public GameSettings settings;
+    /**
+     * The settings of the game<br/>
+     * <i>(modifying them while the game runs can break the application)</i>
+     */
+    public final GameSettings settings;
+    /**
+     * The scenes of the game
+     */
     private final Scene[] scenes;
+    /**
+     * The currently active scene
+     */
     private int currentScene = 0;
 
+    /**
+     * Whether the setup() function has finished. Used to determine whether the process can start drawing
+     */
     private boolean finishSetup = false;
 
     /**
-     * GameProcess & main PApplet -> is the entry point of the application and handles everything
+     * Creates the GameProcess (this happens automatically, do not re-instantiate!)
      * @param settings the settings of the game (such as window size)
      * @param scenes all the scenes this game comprises
      */
@@ -79,6 +104,9 @@ public class GameProcess extends PApplet
         Input.reset();
     }
 
+    /**
+     * The main render method, re-paints the background, sets up the camera view and renders GameObjects based on sorting layers
+     */
     private void render() {
         // refresh background
         background(this.settings.background.getHex());
@@ -101,6 +129,9 @@ public class GameProcess extends PApplet
                 }
     }
 
+    /**
+     * Starts the game through Processing
+     */
     protected void run() {
         String[] args = new String[] { this.getClass().getName() };
         runSketch(args, this);
@@ -148,9 +179,17 @@ public class GameProcess extends PApplet
         Input.keys[key.ordinal()] = null;
     }
 
+    /**
+     * Gets the current scene
+     * @return the currently active scene
+     */
     public Scene getCurrentScene() {
         return scenes[currentScene];
     }
+    /**
+     * Sets the current scene, destroying the previous
+     * @param index the index (position in the scenes array) of the scene to load
+     */
     public void setScene(int index) {
         // check if index is valid
         if (index >= scenes.length)

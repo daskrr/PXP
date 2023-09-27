@@ -1,5 +1,8 @@
 package net.daskrr.cmgt.pxp.data;
 
+/**
+ * The basic keys on a keyboard (it is possible some are missing)
+ */
 public enum Key
 {
     F1(97, 65535),
@@ -103,6 +106,11 @@ public enum Key
         this.key = key;
     }
 
+    /**
+     * Retrieves a key based on its code
+     * @param code the code
+     * @return the key or null
+     */
     public static Key fromCode(int code) {
         for (Key key : values())
             if (key.code == code)

@@ -5,11 +5,17 @@ import net.daskrr.cmgt.pxp.core.GameProcess;
 import net.daskrr.cmgt.pxp.core.Transform;
 import processing.core.PConstants;
 
+/**
+ * Base for the components
+ */
 public class Component implements PConstants
 {
+    /**
+     * The parent GameObject of this component
+     */
     public GameObject gameObject;
 
-    public Component() {  }
+    public Component() { }
 
     /**
      * Called when the component is added to the GameObject
@@ -39,6 +45,10 @@ public class Component implements PConstants
         return GameProcess.getInstance();
     }
 
+    /**
+     * Shorthand method for <i>gameObject.transform</i>
+     * @return the Transform of the parent GameObject
+     */
     public final Transform transform() {
         return gameObject.transform;
     }

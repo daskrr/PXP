@@ -7,15 +7,32 @@ import net.daskrr.cmgt.pxp.data.Input;
 import net.daskrr.cmgt.pxp.data.MouseButton;
 import net.daskrr.cmgt.pxp.data.Vector3;
 
+/**
+ * The Camera Component represents the eyes through which the game is seen. This component is required for the game to run.<br/>
+ * The Camera can be repositioned, which will be reflected in the view of the game.
+ */
 public class Camera extends Component
 {
+    /**
+     * Represents half of the height of the game
+     */
     @Deprecated
     private float orthoSize = 7f;
+    /**
+     * Represents how many units fit on half of the size and half of the with of the window
+     */
     @Deprecated
     private Vector2 unitSize;
 
+    /**
+     * Creates a camera component
+     */
     public Camera() { }
 
+    /**
+     * Creates a camera component given an orthographic size
+     * @param orthoSize a float which represents half of the height of the game
+     */
     @Deprecated
     public Camera(float orthoSize) {
         this.orthoSize = orthoSize;
@@ -26,12 +43,20 @@ public class Camera extends Component
 //        calcUnitSize();
     }
 
+    /**
+     * Sets the orthographic size of the camera
+     * @param orthoSize a float which represents half of the height of the game
+     */
     @Deprecated
     public void setOrthoSize(float orthoSize) {
         this.orthoSize = orthoSize;
         calcUnitSize();
     }
 
+    /**
+     * Calculates the unit size
+     * @see Camera#unitSize
+     */
     @Deprecated
     private void calcUnitSize() {
         Vector2 screenSize = ctx().settings.size;
@@ -45,6 +70,9 @@ public class Camera extends Component
         this.unitSize = new Vector2(widthUnits, heightUnits);
     }
 
+    /**
+     * Internal method used to apply the camera's view (matrices) to the game window
+     */
     public void applyCamera() {
         ctx().beginCamera();
         Vector3 eye = new Vector3(
@@ -74,6 +102,7 @@ public class Camera extends Component
         ctx().endCamera();
     }
 
+    // TODO REMOVE THIS (TESTING)
     @Override
     public void update() {
         transform().position.x -= Time.deltaTime * 3;

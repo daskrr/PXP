@@ -7,7 +7,7 @@ public class Time
      */
     protected static float lastTime = 0f;
     /**
-     * Delta Time in seconds
+     * Delta Time in seconds (time passed between the previous frame and the current)
      */
     public static float deltaTime = 0f;
 

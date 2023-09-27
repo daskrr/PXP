@@ -4,17 +4,40 @@ import net.daskrr.cmgt.pxp.core.Vector2;
 import net.daskrr.cmgt.pxp.data.Pivot;
 import net.daskrr.cmgt.pxp.data.assets.SpriteAsset;
 
+/**
+ * The SpriteRenderer Component is crucial to displaying images/textures on the screen.
+ */
 public class SpriteRenderer extends Renderer
 {
+    /**
+     * The sprite to be rendered
+     */
     public SpriteAsset sprite;
+    /**
+     * The pivot of the sprite
+     */
     public Pivot pivot = Pivot.CENTER;
 
+    /**
+     * Creates a SpriteRenderer component
+     */
     public SpriteRenderer() { }
 
+    /**
+     * Creates a SpriteRenderer component, given a sprite
+     * @param sprite the SpriteAsset to render (use AssetManager)
+     * @see net.daskrr.cmgt.pxp.data.assets.AssetManager
+     */
     public SpriteRenderer(SpriteAsset sprite) {
         this(sprite, Pivot.CENTER);
     }
 
+    /**
+     * Creates a SpriteRenderer component, given a sprite
+     * @param sprite the SpriteAsset to render (use AssetManager)
+     * @param pivot the pivot point of the sprite
+     * @see net.daskrr.cmgt.pxp.data.assets.AssetManager
+     */
     public SpriteRenderer(SpriteAsset sprite, Pivot pivot) {
         this.sprite = sprite;
         this.pivot = pivot;

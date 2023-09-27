@@ -4,6 +4,9 @@ import net.daskrr.cmgt.pxp.core.Vector2;
 
 import java.util.function.Function;
 
+/**
+ * The Pivot point (typically of a sprite) which determines where the sprite's origin will be placed relative to the transform position
+ */
 public enum Pivot
 {
     CENTER(size -> {
