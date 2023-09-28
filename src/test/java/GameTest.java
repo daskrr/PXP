@@ -53,7 +53,7 @@ public class GameTest extends Game
                 }) {{
                     transform = new Transform(new Vector2(0,0), new Vector3(0,0,0), new Vector2(1,1));
                 }},
-                () -> new GameObject("testAnim", new ComponentSupplier[] {
+                () -> new GameObject("cam", new ComponentSupplier[] {
                     Camera::new
                 }) {{
                     transform = new Transform(new Vector2(0,0));

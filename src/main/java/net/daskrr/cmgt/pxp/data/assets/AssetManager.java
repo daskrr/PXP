@@ -67,7 +67,7 @@ public class AssetManager
      * @param columns the number of columns (vertical)
      */
     public static void createSpriteSheet(String name, String path, int rows, int columns) {
-        getInstance().assets.put(name, new SpriteAsset(path) {{ totalRows = rows; totalColumns = columns; }});
+        getInstance().assets.put(name, new SpriteAsset(path) {{ totalRows = rows; totalColumns = columns; isSpriteSheet = true; }});
     }
     /**
      * Creates a sprite asset for every sprite in the sheet which will be loaded once when the game starts and kept in
