@@ -2,7 +2,6 @@ package net.daskrr.cmgt.pxp.core;
 
 import net.daskrr.cmgt.pxp.core.component.Component;
 import net.daskrr.cmgt.pxp.core.component.Renderer;
-import net.daskrr.cmgt.pxp.data.ComponentSupplier;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -42,19 +41,18 @@ public class GameObject
      * @param name the unique name of the object
      */
     public GameObject(String name) {
-        this(name, new ComponentSupplier[0]);
+        this(name, new Component[0]);
     }
 
     /**
      * Creates a GameObject, given a unique name and its components
      * @param name the unique name of the object
-     * @param componentSuppliers the components (wrapped in suppliers for re-usability)
+     * @param components the components of the object
      */
-    public GameObject(String name, ComponentSupplier[] componentSuppliers) {
+    public GameObject(String name, Component[] components) {
         this.name = name;
-        for (ComponentSupplier supplier : componentSuppliers) {
-            Component c = supplier.get();
-            components.add(c);
+        for (Component c : components) {
+            this.components.add(c);
 
             c.gameObject = this;
             this.findRenderer(c);
@@ -68,8 +66,7 @@ public class GameObject
      */
     protected void load() {
         // call start methods
-        for (Component c : components)
-            c.start();
+        components.forEach(Component::start);
     }
 
     /**
@@ -78,9 +75,8 @@ public class GameObject
     protected void draw() {
         // bind transform
         transform.bind();
-        // call start methods
-        for (Component c : components)
-            c.update();
+        // call update methods
+        components.forEach(Component::update);
 
         transform.unbind();
     }
@@ -140,9 +136,8 @@ public class GameObject
     public <T extends Component> void removeComponent(Class<T> type) {
         // prevent ConcurrentModificationException
         new ArrayList<>(components).forEach(c -> {
-            if (c.getClass().equals(type)) {
+            if (c.getClass().equals(type))
                 components.remove(c);
-            }
         });
     }
 
@@ -161,8 +156,7 @@ public class GameObject
      * <b>This cannot be reversed!</b>
      */
     public void destroy() {
-        for (Component c : components)
-            c.destroy();
+        components.forEach(Component::destroy);
 
         scene.removeGameObject(this);
     }

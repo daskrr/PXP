@@ -47,10 +47,10 @@ public class SpriteAsset extends Asset
      */
     private PImage image;
     /**
-     * The pixels per unit (the amount of pixels that would fit in 1 vertical or horizontal unit in the xOy plane of the 2D Game)
+     * The pixels per unit (the amount of pixels that would fit in 1 vertical or horizontal unit in the xOy plane of the 2D Game)<br/>
+     * <i>Default: 100 pixels per unit</i>
      */
-    @Deprecated
-    private int pixelsPerUnit;
+    private int pixelsPerUnit = 100;
 
     /**
      * Creates a new SpriteAsset given a path
@@ -65,7 +65,6 @@ public class SpriteAsset extends Asset
      * @param path the path to the image in the resources directory
      * @param pixelsPerUnit the amount of pixels that would fit in 1 vertical or horizontal unit in the xOy plane of the 2D Game
      */
-    @Deprecated
     public SpriteAsset(String path, int pixelsPerUnit) {
         super(path);
         this.pixelsPerUnit = pixelsPerUnit;
@@ -89,7 +88,6 @@ public class SpriteAsset extends Asset
      * Gets the pixels per unit
      * @return the pixels per unit for this sprite
      */
-    @Deprecated
     public int getPixelsPerUnit() {
         return this.pixelsPerUnit;
     }

@@ -15,6 +15,11 @@ public class GameSettings
      */
     public Vector2 size = new Vector2(400, 400);
     /**
+     * Whether the window is resizable (has no effect in fullscreen)<br/>
+     * <b>STRONGLY ADVISE AGAINST USING THIS. IT WORKS IN MYSTERIOUS WAYS...</b>
+     */
+    public boolean resizable = false;
+    /**
      * The desired FPS (not guaranteed, depends on hardware)
      */
     public int targetFPS = 60;

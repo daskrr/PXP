@@ -51,7 +51,6 @@ public class AssetManager
      * @param path the path to the asset (in the resources folder)
      * @param pixelsPerUnit the pixels to game units ratio (i.e.: 16 ppi is 16x16 image pixels from 0,0 to 1,1)
      */
-    @Deprecated
     public static void createSprite(String name, String path, int pixelsPerUnit) {
         getInstance().assets.put(name, new SpriteAsset(path, pixelsPerUnit));
     }
@@ -80,7 +79,6 @@ public class AssetManager
      * @param columns the number of columns (vertical)
      * @param pixelsPerUnit the pixels to game units ratio (i.e.: 16 ppi is 16x16 image pixels from 0,0 to 1,1)
      */
-    @Deprecated
     public static void createSpriteSheet(String name, String path, int pixelsPerUnit, int rows, int columns) {
         getInstance().assets.put(name, new SpriteAsset(path, pixelsPerUnit) {{ totalRows = rows; totalColumns = columns; isSpriteSheet = true; }});
     }

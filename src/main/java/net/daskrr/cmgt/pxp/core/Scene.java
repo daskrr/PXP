@@ -3,6 +3,7 @@ package net.daskrr.cmgt.pxp.core;
 import net.daskrr.cmgt.pxp.core.component.Camera;
 import net.daskrr.cmgt.pxp.data.GameObjectSupplier;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Scene
     /**
      * The instantiated GameObjects sorted by sortingLayer
      */
-    public final List<List<GameObject>> objectsByLayer = new ArrayList<>();
+    public ArrayList<GameObject>[] objectsByLayer = null;
 
     /**
      * The main camera of the scene
@@ -44,6 +45,10 @@ public class Scene
      * Loads the scene into the game (along with its gameObjects and Components)
      */
     protected void load() {
+//        objectsByLayer = new ArrayList<GameObject> [GameProcess.getInstance().settings.sortingLayers.size()];
+        // giant fucking no-no right here \/
+        objectsByLayer = (ArrayList<GameObject>[]) Array.newInstance(ArrayList.class, GameProcess.getInstance().settings.sortingLayers.size());
+
         for (GameObjectSupplier supplier : gameObjectSuppliers) {
             GameObject go = supplier.get();
             objects.add(go);
@@ -68,20 +73,13 @@ public class Scene
 
         int sortingLayerId = GameProcess.getInstance().settings.sortingLayers.indexOf(gameObject.renderer.sortingLayer);
 
-        if (objectsByLayer.size() <= sortingLayerId)
-            objectsByLayer.add(sortingLayerId, new ArrayList<>() {{ add(gameObject); }});
-        else if (objectsByLayer.get(sortingLayerId) == null)
-            objectsByLayer.set(sortingLayerId, new ArrayList<>() {{ add(gameObject); }});
+        if (objectsByLayer[sortingLayerId] == null)
+            objectsByLayer[sortingLayerId] = new ArrayList<>() {{ add(gameObject); }};
         else
-            objectsByLayer.get(sortingLayerId).add(gameObject);
+            objectsByLayer[sortingLayerId].add(gameObject);
 
         // sort layer
-        objectsByLayer.get(sortingLayerId).sort(new Comparator<GameObject>() {
-            @Override
-            public int compare(GameObject o1, GameObject o2) {
-                return o1.renderer.orderInLayer - o2.renderer.orderInLayer;
-            }
-        });
+        objectsByLayer[sortingLayerId].sort(Comparator.comparingInt(o -> o.renderer.orderInLayer));
     }
 
     /**
@@ -107,11 +105,10 @@ public class Scene
      * @param gameObject the game object to add
      */
     public void addGameObject(GameObject gameObject) {
-        objects.add(gameObject);
-
-        registerSortingLayer(gameObject);
-
         gameObject.load();
+
+        objects.add(gameObject);
+        registerSortingLayer(gameObject);
     }
 
     /**
@@ -135,7 +132,8 @@ public class Scene
      */
     public void removeGameObject(GameObject gameObject) {
         for (List<GameObject> layer : objectsByLayer)
-            layer.remove(gameObject);
+            if (layer != null)
+                layer.remove(gameObject);
 
         objects.remove(gameObject);
     }
@@ -148,6 +146,6 @@ public class Scene
             go.destroy();
 
         objects.clear();
-        objectsByLayer.clear();
+        objectsByLayer = null;
     }
 }

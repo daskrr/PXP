@@ -49,8 +49,8 @@ public class SpriteRenderer extends Renderer
 
         Vector2 size = new Vector2(sprite.size);
 
-//        size.x = size.x / (float) sprite.getPixelsPerUnit();
-//        size.y = size.y / (float) sprite.getPixelsPerUnit();
+        size.x = size.x / (float) sprite.getPixelsPerUnit();
+        size.y = size.y / (float) sprite.getPixelsPerUnit();
 
         Vector2 pivot = this.pivot.calculatePivot.apply(size);
 

@@ -9,6 +9,7 @@ import net.daskrr.cmgt.pxp.data.assets.AssetManager;
 import processing.core.PApplet;
 import processing.opengl.PGraphicsOpenGL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,6 +51,11 @@ public class GameProcess extends PApplet
     private boolean finishSetup = false;
 
     /**
+     * The size of the window
+     */
+    public Vector2 windowSize = new Vector2(1, 1);
+
+    /**
      * Creates the GameProcess (this happens automatically, do not re-instantiate!)
      * @param settings the settings of the game (such as window size)
      * @param scenes all the scenes this game comprises
@@ -65,6 +71,8 @@ public class GameProcess extends PApplet
             settings.sortingLayers.add(0, "Default");
             this.settings.sortingLayers = settings.sortingLayers;
         }
+
+        this.windowSize = new Vector2(settings.size);
     }
 
     @Override
@@ -76,6 +84,9 @@ public class GameProcess extends PApplet
 
     @Override
     public void setup() {
+        if (!settings.fullscreen && settings.resizable)
+            surface.setResizable(true);
+
         frameRate(settings.targetFPS);
         ((PGraphicsOpenGL) g).textureSampling(settings.textureFilter.ordinal());
 
@@ -93,6 +104,8 @@ public class GameProcess extends PApplet
 
     @Override
     public void draw() {
+        this.windowSize = new Vector2(width, height);
+
         if (!finishSetup) return;
 
         Time.newFrame();
@@ -121,12 +134,13 @@ public class GameProcess extends PApplet
         }
 
         for (List<GameObject> layer : getCurrentScene().objectsByLayer)
-            for (GameObject go : layer)
-                if (go.renderer != null) {
-                    go.transform.bind();
-                    go.renderer.render();
-                    go.transform.unbind();
-                }
+            if (layer != null)
+                for (GameObject go : layer)
+                    if (go.renderer != null) {
+                        go.transform.bind();
+                        go.renderer.render();
+                        go.transform.unbind();
+                    }
     }
 
     /**

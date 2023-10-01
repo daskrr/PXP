@@ -21,6 +21,12 @@ public class Transform
     public Vector3 rotation = new Vector3();
 
     /**
+     * Z position for exceptional cases<br/>
+     * <b>USE SORTING LAYERS (under renderers) TO DETERMINE SORTING ORDER!</b>
+     */
+    public float zPosition = 0;
+
+    /**
      * Creates a new Transform with default position, rotation and scale
      */
     public Transform() { }
@@ -53,7 +59,7 @@ public class Transform
      */
     protected void bind() {
         GameProcess.getInstance().pushMatrix();
-        GameProcess.getInstance().translate(position.x, position.y);
+        GameProcess.getInstance().translate(position.x, position.y, zPosition);
         GameProcess.getInstance().rotateX((float) Math.toRadians(rotation.x));
         GameProcess.getInstance().rotateY((float) Math.toRadians(rotation.y));
         GameProcess.getInstance().rotateZ((float) Math.toRadians(rotation.z));
