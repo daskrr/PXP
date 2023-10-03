@@ -39,19 +39,21 @@ public class AssetManager
     /**
      * Creates a sprite asset which will be loaded once when the game starts and kept in memory until the process is terminated
      * @param name the unique name of the asset
-     * @param path the path to the asset (in the resources folder)
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
      */
     public static void createSprite(String name, String path) {
+        checkName(name);
         getInstance().assets.put(name, new SpriteAsset(path));
     }
 
     /**
      * Creates a sprite asset which will be loaded once when the game starts and kept in memory until the process is terminated
      * @param name the unique name of the asset
-     * @param path the path to the asset (in the resources folder)
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
      * @param pixelsPerUnit the pixels to game units ratio (i.e.: 16 ppi is 16x16 image pixels from 0,0 to 1,1)
      */
     public static void createSprite(String name, String path, int pixelsPerUnit) {
+        checkName(name);
         getInstance().assets.put(name, new SpriteAsset(path, pixelsPerUnit));
     }
 
@@ -61,11 +63,12 @@ public class AssetManager
      * represents the position in a uni-dimensional array of sprites (created from left to right from all rows).
      * The main image can be accessed using the name without a suffix.
      * @param name the unique name of the asset
-     * @param path the path to the asset (in the resources folder)
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
      * @param rows the number of rows (horizontal)
      * @param columns the number of columns (vertical)
      */
     public static void createSpriteSheet(String name, String path, int rows, int columns) {
+        checkName(name);
         getInstance().assets.put(name, new SpriteAsset(path) {{ totalRows = rows; totalColumns = columns; isSpriteSheet = true; }});
     }
     /**
@@ -74,16 +77,77 @@ public class AssetManager
      * represents the position in a uni-dimensional array of sprites (created from left to right from all rows).
      * The main image can be accessed using the name without a suffix.
      * @param name the unique name of the asset
-     * @param path the path to the asset (in the resources folder)
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
      * @param rows the number of rows (horizontal)
      * @param columns the number of columns (vertical)
      * @param pixelsPerUnit the pixels to game units ratio (i.e.: 16 ppi is 16x16 image pixels from 0,0 to 1,1)
      */
     public static void createSpriteSheet(String name, String path, int pixelsPerUnit, int rows, int columns) {
+        checkName(name);
         getInstance().assets.put(name, new SpriteAsset(path, pixelsPerUnit) {{ totalRows = rows; totalColumns = columns; isSpriteSheet = true; }});
     }
 
-    public static void createSound(String name, String path) {} // TODO
+    /**
+     * Creates a sound asset
+     * @param name the unique name of the asset
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
+     */
+    public static void createSound(String name, String path) {
+        checkName(name);
+        getInstance().assets.put(name, new SoundAsset(path, 1f));
+    }
+
+    /**
+     * Creates a sound asset given a volume
+     * @param name the unique name of the asset
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
+     * @param volume the volume of the sound asset
+     */
+    public static void createSound(String name, String path, float volume) {
+        checkName(name);
+        getInstance().assets.put(name, new SoundAsset(path, volume));
+    }
+
+    /**
+     * Creates a video asset which will be loaded once when the game starts and kept in memory until the process is terminated
+     * @param name the unique name of the asset
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
+     * @deprecated VIDEO PLAYBACK DOESN'T WORK (check GameProcess' constructor for more information)
+     */
+    @Deprecated
+    public static void createVideo(String name, String path) {
+        checkName(name);
+        getInstance().assets.put(name, new VideoAsset(path));
+    }
+
+    /**
+     * Creates a video asset which will be loaded once when the game starts and kept in memory until the process is terminated
+     * @param name the unique name of the asset
+     * @param path the path to the asset (in the {@literal <resources>}/data folder)
+     * @param pixelsPerUnit the pixels to game units ratio (i.e.: 16 ppi is 16x16 image pixels from 0,0 to 1,1)
+     * @deprecated VIDEO PLAYBACK DOESN'T WORK (check GameProcess' constructor for more information)
+     */
+    @Deprecated
+    public static void createVideo(String name, String path, int pixelsPerUnit) {
+        checkName(name);
+        getInstance().assets.put(name, new VideoAsset(path, pixelsPerUnit));
+    }
+
+    /**
+     * Creates a custom asset (provided the asset implementation)
+     * @param name the unique name of the asset
+     * @param asset the asset instance
+     * @see Asset
+     */
+    public static <T extends Asset> void createCustom(String name, T asset) {
+        checkName(name);
+        getInstance().assets.put(name, asset);
+    }
+
+    private static void checkName(String name) {
+        if (getInstance().assets.containsKey(name))
+            throw new RuntimeException("The name ("+ name +") is already assigned to another asset! The asset was not loaded!");
+    }
 
     /**
      * Retrieves an asset

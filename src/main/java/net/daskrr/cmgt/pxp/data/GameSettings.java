@@ -1,6 +1,7 @@
 package net.daskrr.cmgt.pxp.data;
 
 import net.daskrr.cmgt.pxp.core.Vector2;
+import net.daskrr.cmgt.pxp.data.assets.SpriteAsset;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,12 @@ public class GameSettings
      * The background color
      */
     public Color background = new Color();
+    /**
+     * The background image (done the "Processing way"). Use the AssetManager to assign this.<br/>
+     * <i>The image needs to match the size of the window!</i><br/>
+     * <i>If this field is assigned a value other than null, it takes priority over background color.</i>
+     */
+    public SpriteAsset backgroundImage = null;
     /**
      * The texture filter used when scaling images
      */

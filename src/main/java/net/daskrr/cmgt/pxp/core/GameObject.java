@@ -37,6 +37,17 @@ public class GameObject
     public Renderer renderer;
 
     /**
+     * Whether the game object is active (runs the update loop for components & renders)<br/>
+     * <i>Set this to false if you don't want to destroy an object, but wish to make it dormant</i>
+     */
+    public boolean isActive = true;
+
+    /**
+     * Whether this game object is destroyed
+     */
+    private boolean isDestroyed = false;
+
+    /**
      * Creates a GameObject, given a unique name
      * @param name the unique name of the object
      */
@@ -65,6 +76,8 @@ public class GameObject
      * Called when the objects are loaded, starts the components
      */
     protected void load() {
+        if (this.isDestroyed) return;
+
         // call start methods
         components.forEach(Component::start);
     }
@@ -73,12 +86,15 @@ public class GameObject
      * Game step event, runs every frame
      */
     protected void draw() {
-        // bind transform
-        transform.bind();
-        // call update methods
-        components.forEach(Component::update);
+        if (this.isDestroyed) return;
+        if (!this.isActive) return;
 
-        transform.unbind();
+        // bind transform
+        this.transform.bind();
+        // call update methods
+        this.components.forEach(Component::update);
+
+        this.transform.unbind();
     }
 
     /**
@@ -87,6 +103,8 @@ public class GameObject
      * @param component the component to be added
      */
     public void addComponent(Component component) {
+        if (this.isDestroyed) throw new RuntimeException("This GameObject is destroyed!");
+
         this.components.add(component);
         component.gameObject = this;
         this.findRenderer(component);
@@ -101,6 +119,8 @@ public class GameObject
      * @return the first component of the specified type or null
      */
     public <T extends Component> T getComponentOfType(Class<T> type) {
+        if (this.isDestroyed) throw new RuntimeException("This GameObject is destroyed!");
+
         for (Component c : components)
             if (c.getClass().equals(type))
                 return (T) c;
@@ -113,6 +133,8 @@ public class GameObject
      * @return the components of the specified type or an empty Array
      */
     public <T extends Component> T[] getComponentsOfType(Class<T> type) {
+        if (this.isDestroyed) throw new RuntimeException("This GameObject is destroyed!");
+
         List<T> components = new ArrayList<>();
         for (Component c : this.components)
             if (c.getClass().equals(type))
@@ -126,6 +148,8 @@ public class GameObject
      * @param component the component to remove
      */
     public void removeComponent(Component component) {
+        if (this.isDestroyed) throw new RuntimeException("This GameObject is destroyed!");
+
         components.remove(component);
         component.destroy();
     }
@@ -134,6 +158,8 @@ public class GameObject
      * @param type the component type to remove
      */
     public <T extends Component> void removeComponent(Class<T> type) {
+        if (this.isDestroyed) throw new RuntimeException("This GameObject is destroyed!");
+
         // prevent ConcurrentModificationException
         new ArrayList<>(components).forEach(c -> {
             if (c.getClass().equals(type))
@@ -156,8 +182,12 @@ public class GameObject
      * <b>This cannot be reversed!</b>
      */
     public void destroy() {
+        if (this.isDestroyed) throw new RuntimeException("This GameObject is destroyed already!");
+
         components.forEach(Component::destroy);
 
         scene.removeGameObject(this);
+
+        this.isDestroyed = true;
     }
 }

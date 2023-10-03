@@ -85,9 +85,9 @@ public class Scene
     /**
      * Gets the first Camera GameObject in the scene and establishes it as the main camera to be used for this scene
      * @return the camera game object
-     * @throws Exception if there isn't a Camera GameObject present in the scene
+     * @throws RuntimeException if there isn't a Camera GameObject present in the scene
      */
-    public Camera getCamera() throws Exception {
+    public Camera getCamera() {
         if (mainCam != null)
             return mainCam;
 
@@ -97,12 +97,14 @@ public class Scene
                 return mainCam;
         }
 
-        throw new Exception("The scene doesn't contain a camera!");
+        throw new RuntimeException("The scene doesn't contain a camera!");
     }
 
     /**
-     * Dynamically adds a GameObject to the scene
+     * Dynamically adds a GameObject to the scene<br/>
+     * Tip: Use Component#Instantiate()
      * @param gameObject the game object to add
+     * @see net.daskrr.cmgt.pxp.core.component.Component#Instantiate(GameObject)
      */
     public void addGameObject(GameObject gameObject) {
         gameObject.load();

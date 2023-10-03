@@ -9,7 +9,6 @@ import net.daskrr.cmgt.pxp.data.assets.AssetManager;
 import processing.core.PApplet;
 import processing.opengl.PGraphicsOpenGL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +30,7 @@ public class GameProcess extends PApplet
         return instance;
     }
 
+    public final Game game;
     /**
      * The settings of the game<br/>
      * <i>(modifying them while the game runs can break the application)</i>
@@ -57,24 +57,36 @@ public class GameProcess extends PApplet
 
     /**
      * Creates the GameProcess (this happens automatically, do not re-instantiate!)
-     * @param settings the settings of the game (such as window size)
-     * @param scenes all the scenes this game comprises
+     * @param game the Game object from which this was created (contains game settings & scenes)
      */
-    public GameProcess(GameSettings settings, Scene[] scenes) {
+    public GameProcess(Game game) {
+        // Against my best efforts, I was unable to implement videos. GStreamer doesn't want to cooperate
+        // The code remains as @Deprecated if anyone feels like taking a shot at it. Just uncomment the following line of code:
+        // fixGStreamer();
+        // The error that occurs is rather strange: "No such gstreamer factory: playbin". Processing's movie library uses
+        // PlayBin to play the video. playbin is nowhere to be found in the natives. I've looked through the wrappers and I
+        // could not figure it out. Good luck!
+
         instance = this;
 
-        this.settings = settings;
-        this.scenes = scenes;
+        this.game = game;
+        this.settings = game.settings;
+        this.scenes = game.scenes;
 
         // check sorting layers and make sure there is a default
         if (!settings.sortingLayers.contains("Default")) {
-            settings.sortingLayers.add(0, "Default");
-            this.settings.sortingLayers = settings.sortingLayers;
+            if (settings.sortingLayers.size() == 0)
+                settings.sortingLayers.add("Default");
+            else
+                settings.sortingLayers.add(0, "Default");
         }
 
         this.windowSize = new Vector2(settings.size);
     }
 
+    /**
+     * Sets up the size of the game and fullscreen
+     */
     @Override
     public void settings() {
         size((int) settings.size.x, (int) settings.size.y, P3D);
@@ -82,8 +94,15 @@ public class GameProcess extends PApplet
             fullScreen();
     }
 
+    /**
+     * Calls Game#setup, sets resizable, target frame rate, texture filtering, loads assets with AssetManager, the first scene, sets up time
+     * @see AssetManager
+     * @see Time
+     */
     @Override
     public void setup() {
+        game.setup();
+
         if (!settings.fullscreen && settings.resizable)
             surface.setResizable(true);
 
@@ -102,6 +121,9 @@ public class GameProcess extends PApplet
         this.finishSetup = true;
     }
 
+    /**
+     * Step method, called every frame, checks window size, calls draw for all GameObjects of the current scene and calls render
+     */
     @Override
     public void draw() {
         this.windowSize = new Vector2(width, height);
@@ -122,7 +144,10 @@ public class GameProcess extends PApplet
      */
     private void render() {
         // refresh background
-        background(this.settings.background.getHex());
+        if (this.settings.backgroundImage != null)
+            background(this.settings.backgroundImage.getPImage());
+        else
+            background(this.settings.background.getHex());
 
         try {
             Camera cam = getCurrentScene().getCamera();
@@ -136,7 +161,7 @@ public class GameProcess extends PApplet
         for (List<GameObject> layer : getCurrentScene().objectsByLayer)
             if (layer != null)
                 for (GameObject go : layer)
-                    if (go.renderer != null) {
+                    if (go.renderer != null && go.isActive) {
                         go.transform.bind();
                         go.renderer.render();
                         go.transform.unbind();
@@ -213,5 +238,19 @@ public class GameProcess extends PApplet
         getCurrentScene().destroy();
         currentScene = index;
         getCurrentScene().load();
+    }
+
+    /**
+     * Sets GStreamer library path
+     */
+    @Deprecated
+    private void fixGStreamer() {
+        if (PApplet.platform == WINDOWS)
+            System.setProperty("gstreamer.library.path", sketchPath() + "\\natives\\windows-amd64");
+        else if (PApplet.platform == MACOS)
+            System.setProperty("gstreamer.library.path", sketchPath() + "/natives/macos-x86_64");
+        else if (PApplet.platform == LINUX)
+            System.setProperty("gstreamer.library.path", sketchPath() + "/natives/linux-amd64");
+//        System.setProperty("gstreamer.plugin.path", System.getProperty("gstreamer.library.path") + "\\gstreamer-1.0");
     }
 }

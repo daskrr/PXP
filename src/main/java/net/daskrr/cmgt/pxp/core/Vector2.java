@@ -38,6 +38,10 @@ public class Vector2
         this.y = vec.y;
     }
 
+    public float distance(Vector2 other) {
+        return (float) Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(other.y - this.y, 2));
+    }
+
     @Override
     public String toString() {
         return "Vector2[" + x + ", " + y + "]";
