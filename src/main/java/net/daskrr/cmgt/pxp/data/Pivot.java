@@ -1,7 +1,5 @@
 package net.daskrr.cmgt.pxp.data;
 
-import net.daskrr.cmgt.pxp.core.Vector2;
-
 import java.util.function.Function;
 
 /**

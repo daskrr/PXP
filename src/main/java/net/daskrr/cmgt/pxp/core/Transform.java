@@ -1,5 +1,6 @@
 package net.daskrr.cmgt.pxp.core;
 
+import net.daskrr.cmgt.pxp.data.Vector2;
 import net.daskrr.cmgt.pxp.data.Vector3;
 
 /**
@@ -7,6 +8,11 @@ import net.daskrr.cmgt.pxp.data.Vector3;
  */
 public class Transform
 {
+    /**
+     * The game object that owns this transform
+     */
+    public GameObject gameObject;
+
     /**
      * The position of the game object
      */
@@ -26,6 +32,7 @@ public class Transform
      */
     public float zPosition = 0;
 
+
     /**
      * Creates a new Transform with default position, rotation and scale
      */
@@ -43,6 +50,13 @@ public class Transform
      */
     public Transform(Vector2 position, Vector3 rotation) {
         this(position, rotation, new Vector2(1,1));
+    }
+
+    /**
+     * Creates a new Transform given a position, scale and the default rotation
+     */
+    public Transform(Vector2 position, Vector2 scale) {
+        this(position, new Vector3(), scale);
     }
 
     /**
@@ -72,6 +86,23 @@ public class Transform
     public void unbind() {
         GameProcess.getInstance().popMatrix();
     }
+    /**
+     * Binds the transform's matrix as well as all the parents' transform matrices
+     */
+    protected void bindAll() {
+        if (gameObject.parent != null)
+            gameObject.parent.transform.bindAll();
+
+        bind();
+    }
+
+    protected void unbindAll() {
+        unbind();
+
+        if (gameObject.parent != null)
+            gameObject.parent.transform.unbindAll();
+    }
+
 
     /**
      * Clones the Transform

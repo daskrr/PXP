@@ -1,14 +1,12 @@
 package net.daskrr.cmgt.pxp.core;
 
 import net.daskrr.cmgt.pxp.core.component.Camera;
-import net.daskrr.cmgt.pxp.data.GameSettings;
-import net.daskrr.cmgt.pxp.data.Input;
-import net.daskrr.cmgt.pxp.data.Key;
-import net.daskrr.cmgt.pxp.data.MouseButton;
+import net.daskrr.cmgt.pxp.data.*;
 import net.daskrr.cmgt.pxp.data.assets.AssetManager;
 import processing.core.PApplet;
 import processing.opengl.PGraphicsOpenGL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,6 +52,8 @@ public class GameProcess extends PApplet
      * The size of the window
      */
     public Vector2 windowSize = new Vector2(1, 1);
+
+    private List<Runnable> nextFrameQueue = new ArrayList<>();
 
     /**
      * Creates the GameProcess (this happens automatically, do not re-instantiate!)
@@ -131,6 +131,13 @@ public class GameProcess extends PApplet
         if (!finishSetup) return;
 
         Time.newFrame();
+
+        // execute next frame queue
+        // PREVENT CONCURRENT ON THE FUCKING QUEUE (╯°□°)╯︵ ┻━┻
+        List<Runnable> queue = new ArrayList<>(this.nextFrameQueue);
+        queue.forEach(Runnable::run);
+        this.nextFrameQueue.removeAll(queue);
+
         // update method
         for (GameObject go : getCurrentScene().objects)
             go.draw();
@@ -162,9 +169,9 @@ public class GameProcess extends PApplet
             if (layer != null)
                 for (GameObject go : layer)
                     if (go.renderer != null && go.isActive) {
-                        go.transform.bind();
+                        go.transform.bindAll();
                         go.renderer.render();
-                        go.transform.unbind();
+                        go.transform.unbindAll();
                     }
     }
 
@@ -216,6 +223,14 @@ public class GameProcess extends PApplet
             return;
 
         Input.keys[key.ordinal()] = null;
+    }
+
+    /**
+     * Executes the runnable at the beginning of the next frame
+     * @param run what to execute
+     */
+    public static void nextFrame(Runnable run) {
+        getInstance().nextFrameQueue.add(run);
     }
 
     /**

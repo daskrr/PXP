@@ -1,6 +1,6 @@
 package net.daskrr.cmgt.pxp.core.component;
 
-import net.daskrr.cmgt.pxp.core.Vector2;
+import net.daskrr.cmgt.pxp.data.Vector2;
 import net.daskrr.cmgt.pxp.data.Pivot;
 import net.daskrr.cmgt.pxp.data.assets.AssetManager;
 import net.daskrr.cmgt.pxp.data.assets.VideoAsset;

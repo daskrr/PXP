@@ -4,6 +4,7 @@ import net.daskrr.cmgt.pxp.core.Time;
 import net.daskrr.cmgt.pxp.data.assets.SpriteAsset;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -82,7 +83,7 @@ public class Animation extends Component
         }
 
         List<SpriteAsset> sprites = new ArrayList<>();
-        for (int i = start; i < end; i++)
+        for (int i = start; i <= end; i++)
             sprites.add(spriteSheet.getSubSprite(i));
 
         this.frames = sprites.toArray(new SpriteAsset[0]);
@@ -127,13 +128,30 @@ public class Animation extends Component
         currentFrame = 0;
     }
 
+    /**
+     * Reverses the animation frames.<br/>
+     * <i>This change is permanent for the lifespan of this Animation component.</i>
+     */
+    public void reverse() {
+        List<SpriteAsset> frames = new ArrayList<>(List.of(this.frames));
+        Collections.reverse(frames);
+        this.frames = frames.toArray(new SpriteAsset[0]);
+    }
+
     @Override
     public void update() {
         if (gameObject.renderer == null || !(gameObject.renderer instanceof SpriteRenderer)) return;
         if (!this.playing) return;
 
+        // set first frame if this is the first update for animation
+        if (currentFrame == 0f)
+            ((SpriteRenderer) gameObject.renderer).sprite = frames[currentFrame];
+
+        // add to time so the frame plays out
         currentTime += Time.deltaTime;
-        if (currentFrame + 1 >= frames.length) {
+
+        // check if the current frame is the last one (+1 so that we can play out the last frame)
+        if (currentFrame >= frames.length) {
             if (!repeat) {
                 this.stop();
                 return;
@@ -143,9 +161,13 @@ public class Animation extends Component
             currentFrame = 0;
         }
 
-        if (currentTime > (duration / frames.length) * currentFrame) {
+        // check time to see if the frame has played out it's part of the animation duration
+        if (currentTime > (duration / frames.length) * (currentFrame + 1)) {
             currentFrame++;
-            ((SpriteRenderer) gameObject.renderer).sprite = frames[currentFrame];
+
+            // check if the last frame was incremented to index == frames.length, this will be handled in the next step
+            if (currentFrame < frames.length)
+                ((SpriteRenderer) gameObject.renderer).sprite = frames[currentFrame];
         }
     }
 }

@@ -22,7 +22,6 @@ public class GameTest extends Game
 //            fullscreen = true;
 //            resizable = true;
             background = new Color(0,0,0,255);
-            backgroundImage = AssetManager.get("test", SpriteAsset.class);
             sortingLayers = new ArrayList<>() {{
                 add("Default");
                 add("Default2");
@@ -36,45 +35,78 @@ public class GameTest extends Game
             new Scene(new GameObjectSupplier[] {
                 // camera
                 () -> new GameObject("cam", new Component[] {
-                        new Camera()
+                    new Camera(8f) {{
+//                            followGameObject = "player";
+                    }}
                 }) {{
                     transform = new Transform(new Vector2(0,0));
                 }},
 
                 // testing
-                () -> new GameObject("test", new Component[] {
-                    new Canvas(new DrawEnvironment() {
-                        @Override
-                        public void accept(GameProcess p) {
-                            p.rectMode(CORNERS);
-                            p.rect(0,0,100,100);
-                        }
-                    }) {{
-                        sortingLayer = "Default";
-                        orderInLayer = 1;
-                    }},
-                    new SoundEmitter(AssetManager.get("testSoundMono", SoundAsset.class)) {{
-                        isSpatial = true;
-                        setAutoPlay(true);
-                        setLoop(true);
-                    }}
-                }) {{
-                    transform = new Transform(new Vector2(0,0), new Vector3(0,0,0), new Vector2(4,5));
-                }},
-                () -> new GameObject("test2", new Component[] {
-                    new SpriteRenderer(AssetManager.getSpriteFromSheet("testSheet", 65)) {{
-                        sortingLayer = "Default";
-                        orderInLayer = 0;
-                    }}
-                }) {{
-                    transform = new Transform(new Vector2(0,0), new Vector3(0,0,0), new Vector2(1,1));
-                }},
-                () -> new GameObject("testAnim", new Component[] {
+//                () -> new GameObject("test", new Component[] {
+//                    new Canvas(new DrawEnvironment() {
+//                        @Override
+//                        public void accept(GameProcess p) {
+//                            p.rectMode(CORNERS);
+//                            p.rect(0,0,100,100);
+//                        }
+//                    }) {{
+//                        sortingLayer = "Default";
+//                        orderInLayer = 1;
+//                    }},
+//                    new SoundEmitter(AssetManager.get("testSoundMono", SoundAsset.class)) {{
+//                        isSpatial = true;
+//                        setAutoPlay(true);
+//                        setLoop(true);
+//                    }}
+//                }) {{
+//                    transform = new Transform(new Vector2(0,0), new Vector3(0,0,0), new Vector2(4,5));
+//                }},
+//                () -> new GameObject("test2", new Component[] {
+//                    new SpriteRenderer(AssetManager.getSpriteFromSheet("testSheet", 65)) {{
+//                        sortingLayer = "Default";
+//                        orderInLayer = 0;
+//                    }}
+//                }) {{
+//                    transform = new Transform(new Vector2(0,0), new Vector3(0,0,0), new Vector2(1,1));
+//                }},
+//                () -> new GameObject("test2", new Component[] {
+//                    new SpriteRenderer(AssetManager.get("test", SpriteAsset.class)) {{
+//                        sortingLayer = "Default";
+//                        orderInLayer = 0;
+//                        flipX = true;
+//                        flipY = true;
+//                    }}
+//                }) {{
+//                    transform = new Transform(new Vector2(0,0), new Vector3(0,0,0), new Vector2(1,1));
+//                }},
+                () -> new GameObject("player", new Component[] {
                     new SpriteRenderer() {{
                         sortingLayer = "Default2";
                         orderInLayer = 0;
                     }},
-                    new Animation("full", AssetManager.get("testSheet", SpriteAsset.class), 0, 76, 9f)
+                    new Animation("idling", AssetManager.get("testSheet", SpriteAsset.class), 0, 5, 2f),
+                    new Animation("walking", AssetManager.get("testSheet", SpriteAsset.class), 6, 13, 1f),
+                    new Animation("climbing", AssetManager.get("testSheet", SpriteAsset.class), 58, 62, .7f),
+                    new Animation("full", AssetManager.get("testSheet", SpriteAsset.class), 5f),
+                    new Animator("idling"),
+                    new ComponentTest(),
+                    new SoundEmitter(AssetManager.get("testSoundMono", SoundAsset.class)) {{
+                        isSpatial = true;
+                        innerRadius = 10f;
+                        setLoop(true);
+                    }}
+                }, new GameObject[] {
+                    new GameObject("test2", new Component[] {
+                        new SpriteRenderer(AssetManager.get("test", SpriteAsset.class)) {{
+                            sortingLayer = "Default";
+                            orderInLayer = 0;
+                            flipX = true;
+                            flipY = true;
+                        }}
+                    }) {{
+                        transform = new Transform(new Vector2(4,4), new Vector3(0,0,0), new Vector2(1,1));
+                    }},
                 }) {{
                     transform = new Transform(new Vector2(3,3), new Vector3(0,0,0), new Vector2(1,1));
                 }}

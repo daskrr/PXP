@@ -40,7 +40,7 @@ public class SoundEmitter extends Component
 
     /**
      * The outer radius for spatial audio (determines the slow fading of the sound until the threshold is met when the sound stops)<br/>
-     * <i>Does not include the innerRadius (is calculated from transform position outwards)</i>
+     * <i>Does not include the innerRadius (is calculated from when exiting the innerRadius outwards)</i>
      */
     public float outerRadius = 10f;
 
@@ -59,7 +59,8 @@ public class SoundEmitter extends Component
 
     @Override
     public void start() {
-        this.play();
+        if (this.autoPlay)
+            this.play();
     }
 
     @Override
@@ -68,22 +69,39 @@ public class SoundEmitter extends Component
 
         // calculate the distance between the camera center and this game object on the X axis
         float distX = transform().position.x - gameObject.scene.getCamera().transform().position.x;
-        float distInner = Math.min(Math.max(distX, -innerRadius), innerRadius);
-        float pan = PApplet.map(distInner, -innerRadius,innerRadius, -1f,1f);
-        sound.getSound().pan(pan);
+        float distInnerX = Math.min(Math.max(distX, -innerRadius), innerRadius);
+        // pan the sound to left or right
+        float panX = PApplet.map(distInnerX, -innerRadius,innerRadius, -1f,1f);
+        sound.getSound().pan(panX);
+
+        // calculate the distance between the camera center and this game object on the Y axis
+        float distY = Math.abs(transform().position.y - gameObject.scene.getCamera().transform().position.y);
+        float distInnerY = Math.min(Math.max(distY, 0), innerRadius);
+        float panY = PApplet.map(distInnerY, 0,innerRadius, 0,.5f);
+        float volumePanY = 1f - panY;
+        sound.setVolume(this.volume * volumePanY);
+
+        // check if the distance is smaller than innerRadius, if so volume fading shouldn't happen
+        if (transform().position.distance(gameObject.scene.getCamera().transform().position) <= innerRadius) return;
 
         // calculate when the sound needs to fade and eventually reach 0f
-        // calculate the distance between the camera center and this game object
-        float dist = transform().position.distance(gameObject.scene.getCamera().transform().position);
-        float distOuter = Math.min(Math.max(dist, -outerRadius), outerRadius);
-        float fadeVolume = PApplet.map(distOuter, -outerRadius,outerRadius, 1f,0f);
-        sound.setVolume(this.volume * fadeVolume);
+        // calculate the distance between the camera center and this game object,
+        // subtracting the inner radius so volume fading starts here
+        float dist = transform().position.distance(gameObject.scene.getCamera().transform().position) - innerRadius;
+        float distOuter = Math.min(Math.max(dist, 0), outerRadius);
+        float fadeVolume = PApplet.map(distOuter, 0,outerRadius, 1f,0f);
+        sound.setVolume(this.volume * volumePanY * fadeVolume);
     }
 
     /**
-     * Plays the sound taking loop into consideration
+     * Plays the sound taking loop into consideration<br/>
+     * This will not resume the sound if loop is enabled!<br/>
+     * <i>Note: If the sound is already playing, it will not be restarted!</i>
      */
     public void play() {
+        if (this.sound.isPlaying())
+            return;
+
         if (loop)
             this.sound.getSound().loop();
         else
@@ -93,6 +111,8 @@ public class SoundEmitter extends Component
      * Pauses the sound
      */
     public void pause() {
+        if (!this.sound.isPlaying()) return;
+
         this.sound.pause();
     }
     /**

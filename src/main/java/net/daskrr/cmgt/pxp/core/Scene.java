@@ -67,7 +67,7 @@ public class Scene
      * Adds a GameObjects to the objectsByLayer map and sorts the map (in case a new layer was added)
      * @param gameObject the game object to register
      */
-    private void registerSortingLayer(GameObject gameObject) {
+    protected void registerSortingLayer(GameObject gameObject) {
         if (gameObject.renderer == null)
             return;
 
@@ -107,14 +107,61 @@ public class Scene
      * @see net.daskrr.cmgt.pxp.core.component.Component#Instantiate(GameObject)
      */
     public void addGameObject(GameObject gameObject) {
-        gameObject.load();
+        gameObject.scene = this;
 
-        objects.add(gameObject);
-        registerSortingLayer(gameObject);
+        GameProcess.nextFrame(() -> {
+            objects.add(gameObject);
+            registerSortingLayer(gameObject);
+
+            gameObject.load();
+        });
     }
 
     /**
-     * Gets a GameObject from the scene (existing or added dynamically)
+     * Dynamically adds a GameObject to the scene, under a specified parent<br/>
+     * Tip: Use Component#Instantiate()
+     * @param gameObject the game object to add
+     * @param parent the parent under which the newly instantiated game object will exit
+     * @see net.daskrr.cmgt.pxp.core.component.Component#Instantiate(GameObject)
+     */
+    public void addGameObject(GameObject gameObject, GameObject parent) {
+        gameObject.scene = this;
+
+        GameProcess.nextFrame(() -> {
+            parent.addGameObject(gameObject);
+            registerSortingLayer(gameObject);
+
+            gameObject.parent = parent;
+            gameObject.load();
+        });
+    }
+    /**
+     * Dynamically adds a GameObject to the scene, under a specified parent (by name, searched using Scene#getGameObjectDeep())<br/>
+     * Tip: Use Component#Instantiate()
+     * @param gameObject the game object to add
+     * @param parentName the parent's name under which the newly instantiated game object will exist
+     * @throws RuntimeException if the parent could not be found
+     * @see net.daskrr.cmgt.pxp.core.component.Component#Instantiate(GameObject)
+     * @see Scene#getGameObjectDeep(String)
+     */
+    public void addGameObject(GameObject gameObject, String parentName) {
+        gameObject.scene = this;
+
+        GameObject parentGo = getGameObjectDeep(parentName);
+        if (parentGo == null)
+            throw new RuntimeException("The parent could not be found in any of the parents after a deep search.");
+
+        GameProcess.nextFrame(() -> {
+            parentGo.addGameObject(gameObject);
+            registerSortingLayer(gameObject);
+
+            gameObject.parent = parentGo;
+            gameObject.load();
+        });
+    }
+
+    /**
+     * Gets a GameObject from the scene level (existing or added dynamically)
      * @param name the unique name of the GameObject
      * @return the game object with the specified name or null
      */
@@ -127,12 +174,30 @@ public class Scene
     }
 
     /**
+     * Gets a GameObject from the scene or from any parent game object (existing or added dynamically)
+     * @param name the unique name of the GameObject
+     * @return the game object with the specified name or null
+     */
+    public GameObject getGameObjectDeep(String name) {
+        for (GameObject go : objects) {
+            if (go.name.equals(name))
+                return go;
+            GameObject child = go.getGameObjectDeep(name);
+            if (child != null)
+                return child;
+        }
+
+        return null;
+    }
+
+    /**
      * Removes a game object from the scene<br/>
-     * <i>Note: the GameObject is not destroyed, use its destroy() method if that is required!</i>
+     * <i>Note: the GameObject is not destroyed, use its destroy() method if that is what is needed.</i>
      * @param gameObject the GameObject to remove
      * @see GameObject#destroy()
      */
-    public void removeGameObject(GameObject gameObject) {
+    // this is not next frame due to usage issues, if this method is used, it needs to be used inside GameProcess#nextFrame()
+    protected void removeGameObject(GameObject gameObject) {
         for (List<GameObject> layer : objectsByLayer)
             if (layer != null)
                 layer.remove(gameObject);
@@ -144,10 +209,12 @@ public class Scene
      * Destroys this scene, along with its game objects and their components
      */
     public void destroy() {
-        for (GameObject go : objects)
-            go.destroy();
+        GameProcess.nextFrame(() -> {
+            for (GameObject go : objects)
+                go.destroy();
 
-        objects.clear();
-        objectsByLayer = null;
+            objects.clear();
+            objectsByLayer = null;
+        });
     }
 }

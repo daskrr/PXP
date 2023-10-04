@@ -1,6 +1,5 @@
 package net.daskrr.cmgt.pxp.data;
 
-import net.daskrr.cmgt.pxp.core.Vector2;
 import net.daskrr.cmgt.pxp.data.assets.SpriteAsset;
 
 import java.util.ArrayList;

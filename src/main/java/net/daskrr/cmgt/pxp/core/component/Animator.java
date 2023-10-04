@@ -23,7 +23,8 @@ public class Animator extends Component
     private String defaultAnimation = "";
 
     /**
-     * Whether to immediately start playing an Animation when the game starts.
+     * Whether to immediately start playing an Animation when the game starts.<br/>
+     * <i>This is defaulted to true</i>
      */
     private boolean autoPlay = true;
 
@@ -60,6 +61,26 @@ public class Animator extends Component
     }
 
     /**
+     * Retrieves the default animation
+     * @return the default Animation component
+     */
+    public Animation getAnimation() {
+        return this.animations.get(defaultAnimation);
+    }
+
+    /**
+     * Retrieves an animation
+     * @param name the name of the animation
+     * @return the animation component assigned to that name or null
+     */
+    public Animation getAnimation(String name) {
+        if (!this.animations.containsKey(defaultAnimation))
+            return null;
+
+        return this.animations.get(defaultAnimation);
+    }
+
+    /**
      * Plays the default animation<br/>
      * Stops all other animations
      */
@@ -72,13 +93,19 @@ public class Animator extends Component
 
     /**
      * Plays the specified animation<br/>
-     * Stops all other animations
+     * Stops all other animations<br/>
+     * <i>Note: If the specified animation is already playing, it will not be reset!</i>
      * @param animation the animation to play
      */
     public void play(String animation) {
-        this.stop();
         if (!this.animations.containsKey(animation))
             return;
+
+        // check if the animation is already playing
+        if (this.animations.get(animation).playing)
+            return;
+
+        this.stop();
         this.animations.get(animation).play();
     }
 

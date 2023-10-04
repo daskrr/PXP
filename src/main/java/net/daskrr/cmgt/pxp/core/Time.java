@@ -12,6 +12,22 @@ public class Time
     public static float deltaTime = 0f;
 
     /**
+     * Retrieves the time in milliseconds from Processing since the application has started
+     * @return the time in milliseconds
+     */
+    public static float getMillis() {
+        return GameProcess.getInstance().millis();
+    }
+
+    /**
+     * Retrieves and calculates the time in seconds from Processing since the application has started
+     * @return the time in seconds
+     */
+    public static float get() {
+        return GameProcess.getInstance().millis() / 1000f;
+    }
+
+    /**
      * Calculates delta time for new frame
      */
     protected static void newFrame() {

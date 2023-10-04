@@ -1,6 +1,7 @@
 package net.daskrr.cmgt.pxp.core.component;
 
-import net.daskrr.cmgt.pxp.core.Vector2;
+import net.daskrr.cmgt.pxp.core.GameObject;
+import net.daskrr.cmgt.pxp.data.Vector2;
 import net.daskrr.cmgt.pxp.data.Vector3;
 
 /**
@@ -24,6 +25,18 @@ public class Camera extends Component
     public float cameraZ = 10f;
 
     /**
+     * The unique name of the game object that the camera should follow<br/>
+     * <i>Note: if this is null or the object cannot be found, instead of throwing an exception, the camera will stay stationary.</i><br/>
+     * <i>Note: if this is assigned, but the game object cannot be found, the camera will try to find it <b>every frame</b>.</i>
+     */
+    public String followGameObject = null;
+
+    /**
+     * The game object instance to follow
+     */
+    private GameObject followTarget = null;
+
+    /**
      * Creates a camera component
      */
     public Camera() { }
@@ -39,6 +52,14 @@ public class Camera extends Component
     @Override
     public void start() {
         calcUnitSize();
+
+        this.findTarget();
+    }
+
+    @Override
+    public void update() {
+        this.findTarget();
+        this.follow();
     }
 
     /**
@@ -98,16 +119,17 @@ public class Camera extends Component
         ctx().endCamera();
     }
 
-    // TODO REMOVE THIS (TESTING)
-    @Override
-    public void update() {
-//        this.orthoSize += Time.deltaTime * 25f;
-//        this.calcUnitSize();
+    private void findTarget() {
+        // try and get the object to follow
+        if (followGameObject == null) return;
+        GameObject target = gameObject.scene.getGameObject(followGameObject);
+        if (target == null) return;
 
-//        transform().position.x -= Time.deltaTime * 3;
-//        transform().position.y -= Time.deltaTime * 3;
-//
-//        if (Input.getMouseButton(MouseButton.MB1))
-//            System.out.println("enter");
+        this.followTarget = target;
+    }
+
+    private void follow() {
+        if (followTarget == null) return;
+        transform().position = followTarget.transform.position.clone();
     }
 }

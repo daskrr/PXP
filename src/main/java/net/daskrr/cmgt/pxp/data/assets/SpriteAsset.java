@@ -1,7 +1,7 @@
 package net.daskrr.cmgt.pxp.data.assets;
 
 import net.daskrr.cmgt.pxp.core.GameProcess;
-import net.daskrr.cmgt.pxp.core.Vector2;
+import net.daskrr.cmgt.pxp.data.Vector2;
 import processing.core.PImage;
 
 /**
