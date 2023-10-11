@@ -1,22 +1,27 @@
-import net.daskrr.cmgt.pxp.core.GameObject;
-import net.daskrr.cmgt.pxp.core.Transform;
-import net.daskrr.cmgt.pxp.data.Vector2;
-import net.daskrr.cmgt.pxp.core.component.Animator;
-import net.daskrr.cmgt.pxp.core.component.Component;
-import net.daskrr.cmgt.pxp.core.component.SoundEmitter;
-import net.daskrr.cmgt.pxp.core.component.SpriteRenderer;
-import net.daskrr.cmgt.pxp.data.Input;
-import net.daskrr.cmgt.pxp.data.Key;
-import net.daskrr.cmgt.pxp.data.assets.AssetManager;
-import net.daskrr.cmgt.pxp.data.assets.SpriteAsset;
+import pxp.engine.core.GameObject;
+import pxp.engine.core.Transform;
+import pxp.engine.core.component.*;
+import pxp.engine.core.component.pointer.PointerHandler;
+import pxp.engine.core.component.pointer.PointerHandlerDrag;
+import pxp.engine.core.component.pointer.PointerHandlerMouse;
+import pxp.engine.data.Pivot;
+import pxp.engine.data.Vector2;
+import pxp.engine.data.Input;
+import pxp.engine.data.Key;
+import pxp.engine.data.assets.AssetManager;
+import pxp.engine.data.assets.SpriteAsset;
+import processing.event.MouseEvent;
+import pxp.logging.Debug;
 
-public class ComponentTest extends Component
+public class ComponentTest extends Component implements PointerHandlerMouse, PointerHandlerDrag
 {
     private Animator animator;
     private SoundEmitter soundEmitter;
 
     @Override
     public void start() {
+        this.gameObject.setPersistent(true);
+
         this.animator = getComponentOfType(Animator.class);
         this.soundEmitter = getComponentOfType(SoundEmitter.class);
 
@@ -58,15 +63,111 @@ public class ComponentTest extends Component
             this.soundEmitter.pause();
         }
 
-        if (Input.getKey(Key.U)) {
-            Instantiate(new GameObject("testChild", new Component[] {
-                new SpriteRenderer(AssetManager.get("test", SpriteAsset.class)) {{
-                    sortingLayer = "Default";
-                    orderInLayer = 0;
-                }}
-            }) {{
-                transform = new Transform(new Vector2(2, 2), new Vector2(.5f, .5f));
-            }}, "test2");
+        if (Input.getKeyOnce(Key.U)) {
+            GameObject parent = gameObject.scene.getGameObjectDeep("test2");
+            if (parent != null)
+                Instantiate(new GameObject("testChild", new Component[] {
+                    new SpriteRenderer(AssetManager.get("test", SpriteAsset.class)) {{
+                        setSortingLayer("Default");
+                    }},
+                    new Component(){
+                       @Override
+                       public void update() {
+                           System.out.println(gameObject.isDestroyed);
+                       }
+                    }
+                }) {{
+                    transform = new Transform(new Vector2(2, 2), new Vector2(.5f, .5f));
+                }}, parent);
         }
+
+        if (Input.getKeyOnce(Key.K)) {
+            ctx().setScene(ctx().getCurrentScene().index == 0 ? 1 : 0);
+//            ctx().setScene(1);
+        }
+    }
+
+    @Override
+    public boolean checkOverlap(Vector2 mousePos) {
+        Vector2 worldPos = this.gameObject.scene.getCamera().screenToWorldPosition(mousePos);
+        boolean overlap = rectTransform().checkOverlap(worldPos, Pivot.CENTER);
+
+//        System.out.println(worldPos);
+//        if (overlap)
+//            Debug.log("overlap");
+
+        return overlap;
+    }
+
+    @Override
+    public void setHovering(boolean hovering) {
+
+    }
+
+    @Override
+    public boolean isHovering() {
+        return false;
+    }
+
+//    @Override
+//    public void mouseHover(MouseEvent event) {
+//
+//    }
+//
+//    @Override
+//    public void mouseHoverEnter(MouseEvent event) {
+//
+//    }
+//
+//    @Override
+//    public void mouseHoverExit(MouseEvent event) {
+//
+//    }
+
+    @Override
+    public void mouseClick(MouseEvent event) {
+
+    }
+
+    @Override
+    public void mouseScroll(MouseEvent event) {
+
+    }
+
+    @Override
+    public void mouseDown(MouseEvent event) {
+
+    }
+
+    @Override
+    public void mouseUp(MouseEvent event) {
+
+    }
+
+    private boolean dragging = false;
+
+    @Override
+    public void setDragging(boolean dragging) {
+        this.dragging = dragging;
+    }
+
+    @Override
+    public boolean isDragging() {
+        return dragging;
+    }
+
+    @Override
+    public void mouseDrag(MouseEvent event) {
+        Debug.log("dragging");
+    }
+
+    @Override
+    public void mouseDragStart(MouseEvent event) {
+        Debug.log("started dragging");
+    }
+
+    @Override
+    public void mouseDragStop(MouseEvent event) {
+        Debug.log("stopped dragging");
     }
 }
