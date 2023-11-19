@@ -76,6 +76,7 @@ public class Camera extends Component
     public void setOrthoSize(float orthoSize) {
         this.orthoSize = orthoSize;
 
+        // TODO this should be calculated even in scene edit mode
         if (started)
             calcUnitSize();
     }

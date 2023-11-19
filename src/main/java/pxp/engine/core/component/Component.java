@@ -5,6 +5,7 @@ import pxp.engine.core.GameProcess;
 import pxp.engine.core.Transform;
 import pxp.engine.core.RectTransform;
 import processing.core.PConstants;
+import pxp.engine.data.collision.Collision;
 
 /**
  * Base for the components
@@ -22,6 +23,12 @@ public class Component implements PConstants
      * Changing this will break functionality!
      */
     public boolean started = false;
+
+    /**
+     * Whether to draw gizmos for this component
+     */
+    public boolean drawGizmos = false;
+
 
     public Component() { }
 
@@ -47,7 +54,39 @@ public class Component implements PConstants
     /**
      * Called after render, only in SceneView (with the Editor) or in the game itself if enabled
      */
-    public void onGizmosDraw() { }
+    public void gizmosDraw() { }
+
+    /**
+     * Called when a collision first happens
+     * @param collision the collision
+     */
+    public void collisionEnter(Collision collision) { }
+    /**
+     * Called every frame when the object is colliding with another one
+     * @param collision the collision
+     */
+    public void collisionStay(Collision collision) { }
+    /**
+     * Called after the last frame of collision
+     * @param collision the collision
+     */
+    public void collisionExit(Collision collision) { }
+
+    /**
+     * Called when a trigger collision first happens
+     * @param collider the other collider
+     */
+    public void triggerEnter(Collider collider) { }
+    /**
+     * Called every frame when the object is trigger colliding with another one
+     * @param collider the other collider
+     */
+    public void triggerStay(Collider collider) { }
+    /**
+     * Called after the last frame of the trigger collision
+     * @param collider the other collider
+     */
+    public void triggerExit(Collider collider) { }
 
 
     // short method names for ease of use
@@ -131,7 +170,7 @@ public class Component implements PConstants
      * Instantiates a GameObject into the current Scene
      * @param gameObject the GameObject to be placed in the Scene
      */
-    public final void Instantiate(GameObject gameObject) {
+    public final void instantiate(GameObject gameObject) {
         ctx().getCurrentScene().addGameObject(gameObject);
     }
 
@@ -139,7 +178,7 @@ public class Component implements PConstants
      * Instantiates a GameObject into the current Scene, as a child of this component's game object
      * @param gameObject the GameObject to be placed in the Scene
      */
-    public final void InstantiateChild(GameObject gameObject) {
+    public final void instantiateChild(GameObject gameObject) {
         ctx().getCurrentScene().addGameObject(gameObject, this.gameObject);
     }
 
@@ -148,7 +187,7 @@ public class Component implements PConstants
      * @param gameObject the GameObject to be placed in the Scene
      * @param parent the parent to father the child
      */
-    public final void Instantiate(GameObject gameObject, GameObject parent) {
+    public final void instantiate(GameObject gameObject, GameObject parent) {
         ctx().getCurrentScene().addGameObject(gameObject, parent);
     }
     /**
@@ -156,7 +195,7 @@ public class Component implements PConstants
      * @param gameObject the GameObject to be placed in the Scene
      * @param parentName the parent's name under which the newly instantiated game object will exist
      */
-    public final void Instantiate(GameObject gameObject, String parentName) {
+    public final void instantiate(GameObject gameObject, String parentName) {
         ctx().getCurrentScene().addGameObject(gameObject, parentName);
     }
 }

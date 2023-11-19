@@ -40,6 +40,22 @@ public class Rect
         return this.position.x + size.x + pivot.calc.apply(size).x;
     }
 
+    public Vector2 leftTop() {
+        return new Vector2(this.left(), this.top());
+    }
+
+    public Vector2 rightTop() {
+        return new Vector2(this.right(), this.top());
+    }
+
+    public Vector2 rightBottom() {
+        return new Vector2(this.right(), this.bottom());
+    }
+
+    public Vector2 leftBottom() {
+        return new Vector2(this.left(), this.bottom());
+    }
+
     @Override
     public String toString() {
         return "Rect [top: " + top() + ", bottom: " + bottom() + ", left: " + left() + ", right: " + right() + "]";

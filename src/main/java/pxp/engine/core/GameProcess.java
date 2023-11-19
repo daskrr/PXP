@@ -1,5 +1,6 @@
 package pxp.engine.core;
 
+import pxp.engine.core.manager.CollisionManager;
 import pxp.engine.core.manager.LayerManager;
 import pxp.engine.data.assets.AssetManager;
 import pxp.engine.data.ui.Cursor;
@@ -71,6 +72,16 @@ public class GameProcess extends PApplet
     private final List<Routine> routines = new ArrayList<>();
 
     /**
+     * The Collision Manager
+     */
+    protected CollisionManager collisionManager;
+
+    /**
+     * Whether to forcibly draw all gizmos (may cause lag, as every component's gizmosDraw will be invoked every frame)
+     */
+    public boolean forceDrawGizmos;
+
+    /**
      * Holds the scene change persistent game objects
      */
     protected final List<GameObject> persistent = new ArrayList<>();
@@ -100,12 +111,15 @@ public class GameProcess extends PApplet
 
         this.game = game;
         this.settings = game.settings;
+        this.forceDrawGizmos = game.settings.forceDrawGizmos;
         this.scenes = game.scenes;
 
         for (int i = 0; i < this.scenes.length; i++)
             this.scenes[i].index = i;
 
         LayerManager.initialize(this.settings.layers, this.settings.sortingLayers);
+
+        this.collisionManager = new CollisionManager(this.settings.ignoreCollisionLayers);
 
         this.windowSize = new Vector2(settings.size);
     }
@@ -145,10 +159,6 @@ public class GameProcess extends PApplet
         getCurrentScene().context = this;
         getCurrentScene().load();
 
-        // unnecessary
-//        Time.lastTime = millis() / 1000f;
-//        Time.deltaTime = 0f;
-
         this.finishSetup = true;
         this.finishSetupCallback.run();
     }
@@ -179,6 +189,8 @@ public class GameProcess extends PApplet
         // update method
         for (GameObject go : getCurrentScene().objects)
             go.update();
+
+        this.collisionManager.update();
 
         // routines
         this.stepRoutines();

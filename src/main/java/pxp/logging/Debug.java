@@ -5,9 +5,13 @@ import java.util.logging.Level;
 
 public class Debug
 {
+    private static String nullCheck(Object obj) {
+        return obj == null ? null : obj.toString();
+    }
+
     // LOG
     public static void log(Object message) {
-        PXPLogger.getInstance().log(Level.INFO, message.toString());
+        PXPLogger.getInstance().log(Level.INFO, nullCheck(message));
     }
     public static void log(char message) {
         PXPLogger.getInstance().log(Level.INFO, String.valueOf(message));
@@ -48,7 +52,7 @@ public class Debug
 
     // WARNING
     public static void warn(Object message) {
-        PXPLogger.getInstance().log(Level.WARNING, message.toString());
+        PXPLogger.getInstance().log(Level.WARNING, nullCheck(message));
     }
     public static void warn(char message) {
         PXPLogger.getInstance().log(Level.WARNING, String.valueOf(message));
@@ -89,7 +93,7 @@ public class Debug
 
     // ERROR
     public static void err(Object message) {
-        PXPLogger.getInstance().log(Level.SEVERE, message.toString());
+        PXPLogger.getInstance().log(Level.SEVERE, nullCheck(message));
     }
     public static void err(char message) {
         PXPLogger.getInstance().log(Level.SEVERE, String.valueOf(message));

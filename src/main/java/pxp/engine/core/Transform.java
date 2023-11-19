@@ -37,6 +37,11 @@ public class Transform
      */
     public float zPosition = 0;
 
+    /**
+     * [Internal] The transform position of last frame
+     */
+    public Vector2 lastPosition;
+
 
     /**
      * Creates a new Transform with default position, rotation and scale
@@ -71,6 +76,17 @@ public class Transform
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
+
+        this.lastPosition = position.clone();
+    }
+
+    /**
+     * Calculates the vector resulting from the previous position (last frame) and the current position.<br/><br/>
+     * Dev Note: This may not be the best approach, however this engine doesn't have physics, ergo this should suffice.
+     * @return the velocity vector
+     */
+    public Vector2 calculateVelocity() {
+        return Vector2.subtract(this.position, this.lastPosition);
     }
 
     /**

@@ -51,6 +51,7 @@ public class GameSettings
      * The texture filter used when scaling images
      */
     public TextureFilter textureFilter = TextureFilter.POINT;
+
     /**
      * The sorting layers, in the desired order of rendering<br/>
      * Should contain a "Default" layer (placed anywhere). If one is not present, one will be inserted at the 0th index.
@@ -71,6 +72,11 @@ public class GameSettings
      * The specified {@link GameSettings#layers}' names have their collisions disabled
      */
     public List<Pair<String, String>> ignoreCollisionLayers = new ArrayList<>();
+
+    /**
+     * Forces the game to draw Gizmos, no matter component preference
+     */
+    public boolean forceDrawGizmos = false;
 
     /**
      * Creates a new GameSettings structure, it is preferred to use an initializer, i.e: <br/>

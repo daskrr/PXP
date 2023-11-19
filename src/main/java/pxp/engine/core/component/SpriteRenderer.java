@@ -86,7 +86,7 @@ public class SpriteRenderer extends PivotedRenderer
         Vector2 pivot = this.pivot.calc.apply(size);
 
         // push translation for pivot
-        ctx().translate(pivot.x, pivot.y);
+        ctx().translate(pivot.x, pivot.y, 1f);
 
         if (sprite.isSubSprite) {
             int[] uvs = new int[] {

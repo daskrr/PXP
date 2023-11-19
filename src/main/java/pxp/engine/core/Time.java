@@ -51,6 +51,12 @@ public class Time
      */
     public float _deltaTime = 0f;
 
+    /**
+     * [Internal] The number to multiply deltaTime with.<br/>
+     * This can slow down or speed up everything that uses delta time.
+     */
+    public float _timeScale = 1.0F;
+
     private Time(GameProcess ctx) {
         this.ctx = ctx;
         timeInstances.put(ctx.hashCode(), this);
@@ -70,6 +76,15 @@ public class Time
     public float _get() {
         return ctx.millis() / 1000f;
     }
+
+    /**
+     * [Internal] Sets the timeScale of this Time instance.
+     * @param scale the scale (0f-1f slows down, 1f-inf speeds up)
+     */
+    public void _setTimeScale(float scale) {
+        this._timeScale = scale;
+    }
+
     /**
      * Calculates delta time for new frame
      */
@@ -119,15 +134,24 @@ public class Time
     }
 
     /**
+     * The number to multiply deltaTime with.<br/>
+     * This can slow down or speed up everything that uses delta time.
+     */
+    public static float getTimeScale() {
+        return getDefault()._timeScale;
+    }
+    /**
+     * Sets the timeScale of this Time instance.
+     * @param scale the scale (0-1 slows down, 1-inf speeds up)
+     */
+    public static void setTimeScale(float scale) {
+        getDefault()._setTimeScale(scale);
+    }
+
+    /**
      * Calculates delta time for new frame
      */
     protected static void newFrame() {
-//        frameCount++;
-//
-//        // calculate delta time
-//        deltaTime = GameProcess.getInstance().millis() / 1000f - lastTime;
-//        lastTime = GameProcess.getInstance().millis() / 1000f;
-
         getDefault()._newFrame();
     }
 }

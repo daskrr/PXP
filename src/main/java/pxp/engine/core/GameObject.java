@@ -4,6 +4,9 @@ import pxp.engine.core.component.Collider;
 import pxp.engine.core.component.Component;
 import pxp.engine.core.component.pointer.*;
 import pxp.engine.core.component.Renderer;
+import pxp.engine.core.manager.CollisionManager;
+import pxp.engine.data.CollisionEvent;
+import pxp.engine.data.TriggerCollisionEvent;
 import pxp.engine.data.Vector2;
 import processing.event.MouseEvent;
 
@@ -43,7 +46,7 @@ public class GameObject
     /**
      * [Internal] The colliders of the GameObject
      */
-    public List<Collider> colliders;
+    public List<Collider> colliders = new ArrayList<>();
 
     /**
      * The parent of this game object, null if this is at scene level<br/>
@@ -116,7 +119,7 @@ public class GameObject
             this.components.add(c);
 
             c.gameObject = this;
-            this.findCoreComponents(c, false);
+            this.registerRenderer(c, false);
 
             c.awake();
         }
@@ -143,6 +146,7 @@ public class GameObject
             c.start();
             c.started = true;
         });
+        this.registerCoreComponents();
         this.children.forEach(go -> {
             go.scene = this.scene; // and set scene context
             go.load();
@@ -158,6 +162,9 @@ public class GameObject
         if (this.isDestroyed) return;
         if (!this.isActive) return;
 
+        // set last position
+        this.transform.lastPosition = this.transform.position.clone();
+
         // bind transform
         this.transform.bind(scene.context);
         // call update methods
@@ -167,6 +174,18 @@ public class GameObject
         this.children.forEach(GameObject::update);
 
         this.transform.unbind();
+    }
+
+    /**
+     * Invokes the gizmosDraw of all components and children
+     */
+    protected void gizmosDraw() {
+        this.components.forEach((c) -> {
+            if (c.drawGizmos || this.scene.context.forceDrawGizmos) {
+                c.gizmosDraw();
+            }
+        });
+        this.children.forEach(GameObject::gizmosDraw);
     }
 
     /**
@@ -308,6 +327,7 @@ public class GameObject
 
         GameProcess.nextFrame(() -> {
             components.remove(component);
+            unregisterCoreComponents(component);
             component.destroy();
         });
     }
@@ -324,10 +344,81 @@ public class GameObject
             new ArrayList<>(components).forEach(c -> {
                 if (type.isInstance(c)) {
                     components.remove(c);
+                    unregisterCoreComponents(c);
                     c.destroy();
                 }
             }
         ));
+    }
+
+    /**
+     * Checks if the component is a Renderer and registers the sorting layer of the Renderer
+     * @param c the component to check
+     * @param registerSortingLayer whether to register the sorting layer
+     */
+    private void registerRenderer(Component c, boolean registerSortingLayer) {
+        if (c instanceof Renderer r) {
+            this.renderer = r;
+            if (registerSortingLayer)
+                this.scene.registerSortingLayer(this);
+        }
+    }
+
+    /**
+     * Loops through all components and registers colliders, updating the {@link CollisionManager}
+     */
+    private void registerCoreComponents() {
+        this.components.forEach((c) -> {
+            if (c instanceof Collider col) {
+                this.colliders.add(col);
+                this.scene.context.collisionManager.register(this);
+            }
+        });
+    }
+
+    /**
+     * Checks if the component is a Renderer or a Collider and removes them, as well as updating the CollisionManager
+     * @param c the component to check
+     */
+    private void unregisterCoreComponents(Component c) {
+        if (c instanceof Renderer && this.renderer.equals(c))
+            this.renderer = null;
+        else if (c instanceof Collider col) {
+            this.colliders.remove(col);
+
+            if (this.colliders.size() == 0)
+                this.scene.context.collisionManager.unregister(this);
+        }
+
+    }
+
+    // ========================== EVENTS ==========================
+
+    /**
+     * [Internal] Propagates a collision event throughout components
+     * @param collisionEvent the collision to propagate
+     */
+    public void propagateCollisionEvent(CollisionEvent collisionEvent) {
+        if (collisionEvent instanceof TriggerCollisionEvent) {
+            this.components.forEach((c) -> {
+                switch (collisionEvent.eventTime) {
+                    case ENTER -> c.triggerEnter(collisionEvent.collision.otherCollider);
+                    case STAY -> c.triggerStay(collisionEvent.collision.otherCollider);
+                    case EXIT -> c.triggerExit(collisionEvent.collision.otherCollider);
+                }
+
+            });
+        } else {
+            this.components.forEach((c) -> {
+                switch (collisionEvent.eventTime) {
+                    case ENTER -> c.collisionEnter(collisionEvent.collision);
+                    case STAY -> c.collisionStay(collisionEvent.collision);
+                    case EXIT -> c.collisionExit(collisionEvent.collision);
+                }
+
+            });
+        }
+
     }
 
     /**

@@ -1,7 +1,7 @@
 import pxp.engine.core.GameObject;
+import pxp.engine.core.Time;
 import pxp.engine.core.Transform;
 import pxp.engine.core.component.*;
-import pxp.engine.core.component.pointer.PointerHandler;
 import pxp.engine.core.component.pointer.PointerHandlerDrag;
 import pxp.engine.core.component.pointer.PointerHandlerMouse;
 import pxp.engine.data.Pivot;
@@ -11,6 +11,7 @@ import pxp.engine.data.Key;
 import pxp.engine.data.assets.AssetManager;
 import pxp.engine.data.assets.SpriteAsset;
 import processing.event.MouseEvent;
+import pxp.engine.data.collision.Collision;
 import pxp.logging.Debug;
 
 public class ComponentTest extends Component implements PointerHandlerMouse, PointerHandlerDrag
@@ -30,16 +31,18 @@ public class ComponentTest extends Component implements PointerHandlerMouse, Poi
 
     @Override
     public void update() {
+        float speed = 15f;
+
         if (Input.getKey(Key.D)) {
             // move to the right
-            transform().position.x += .13f;
+            transform().position.x += speed * Time.deltaTime;
             animator.play("walking");
             ((SpriteRenderer) gameObject.renderer).flipX = false;
             this.soundEmitter.play();
         }
         else if (Input.getKey(Key.A)) {
             // move to the left
-            transform().position.x -= .13f;
+            transform().position.x -= speed * Time.deltaTime;
             animator.play("walking");
             ((SpriteRenderer) gameObject.renderer).flipX = true;
             this.soundEmitter.play();
@@ -47,13 +50,13 @@ public class ComponentTest extends Component implements PointerHandlerMouse, Poi
 
         if (Input.getKey(Key.W)) {
             // move to the right
-            transform().position.y -= .13f;
+            transform().position.y -= speed * Time.deltaTime;
             animator.play("climbing");
             this.soundEmitter.play();
         }
         else if (Input.getKey(Key.S)) {
             // move to the left
-            transform().position.y += .13f;
+            transform().position.y += speed * Time.deltaTime;
             animator.play("climbing");
             this.soundEmitter.play();
         }
@@ -66,7 +69,7 @@ public class ComponentTest extends Component implements PointerHandlerMouse, Poi
         if (Input.getKeyOnce(Key.U)) {
             GameObject parent = gameObject.scene.getGameObjectDeep("test2");
             if (parent != null)
-                Instantiate(new GameObject("testChild", new Component[] {
+                instantiate(new GameObject("testChild", new Component[] {
                     new SpriteRenderer(AssetManager.get("test", SpriteAsset.class)) {{
                         setSortingLayer("Default");
                     }},
@@ -85,6 +88,30 @@ public class ComponentTest extends Component implements PointerHandlerMouse, Poi
             ctx().setScene(ctx().getCurrentScene().index == 0 ? 1 : 0);
 //            ctx().setScene(1);
         }
+    }
+
+    public void collisionEnter(Collision col) {
+        Debug.log(this.gameObject + " enter with: " + col.otherCollider.gameObject);
+    }
+
+    public void collisionStay(Collision col) {
+        Debug.log(this.gameObject + " stay with: " + col.otherCollider.gameObject);
+    }
+
+    public void collisionExit(Collision col) {
+        Debug.log(this.gameObject + " exit with: " + col.otherCollider.gameObject);
+    }
+
+    public void triggerEnter(Collider col) {
+        Debug.log(this.gameObject + " trigger enter with: " + col.gameObject);
+    }
+
+    public void triggerStay(Collider col) {
+        Debug.log(this.gameObject + " trigger stay with:" + col.gameObject);
+    }
+
+    public void triggerExit(Collider col) {
+        Debug.log(this.gameObject + " trigger exit with: " + col.gameObject);
     }
 
     @Override

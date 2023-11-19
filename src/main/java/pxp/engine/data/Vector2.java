@@ -191,6 +191,16 @@ public class Vector2
     }
 
     /**
+     * Uses {@link Mathf#abs(float)} on x and y and sets them
+     * @return this vector after abs
+     */
+    public Vector2 abs() {
+        this.x = Mathf.abs(this.x);
+        this.y = Mathf.abs(this.y);
+        return this;
+    }
+
+    /**
      * Calculates the distance between two Vector2s
      * @param other the vector to calculate the distance to
      * @return the positive distance between the two vectors
@@ -200,15 +210,44 @@ public class Vector2
     }
 
     /**
+     * Gets the vector with the minimum magnitude
+     */
+    public static Vector2 min(Vector2 v1, Vector2 v2) {
+        float v1Mag = v1.getMagnitude();
+        float v2Mag = v2.getMagnitude();
+        return Mathf.min(v1Mag, v2Mag) == v1Mag ? v1 : v2;
+    }
+
+    /**
+     * Gets the vector with the maximum magnitude
+     */
+    public static Vector2 max(Vector2 v1, Vector2 v2) {
+        float v1Mag = v1.getMagnitude();
+        float v2Mag = v2.getMagnitude();
+        return Mathf.max(v1Mag, v2Mag) == v1Mag ? v1 : v2;
+    }
+
+    /**
      * Adds two vectors together
      */
     public static Vector2 add(Vector2 vec1, Vector2 vec2) {
         vec1 = vec1.clone();
         vec1.x += vec2.x;
         vec1.y += vec2.y;
-
         return vec1;
     }
+
+    /**
+     * Adds two or more vectors together
+     */
+    public static Vector2 add(Vector2... vectors) {
+        Vector2 sum = new Vector2();
+        for (Vector2 v : vectors)
+            sum.add(v);
+
+        return sum;
+    }
+
     /**
      * Adds a number to both x and y
      */

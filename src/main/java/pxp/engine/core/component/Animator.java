@@ -10,7 +10,7 @@ import java.util.Map;
  * The Animator Component makes the usage of Animation components easier and more organized.<br/>
  * The Animator automatically maps the Animation components of a GameObject and through its methods any animation can be
  * easily played, paused or stopped.<br/>
- * <i>Note: The Animation components must already exist in the GameObject. No dynamically added components will be mapped!</i>
+ * <i>Note: The Animation components must already exist in the GameObject.&nbsp;No dynamically added components will be mapped!</i>
  * @see Animation
  * @see GameObject
  */

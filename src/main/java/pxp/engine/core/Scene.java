@@ -26,7 +26,7 @@ public class Scene
     /**
      * The GameObjects' suppliers (for re-usability)
      */
-    private final GameObjectSupplier[] gameObjectSuppliers;
+    private GameObjectSupplier[] gameObjectSuppliers;
 
     /**
      * The instantiated GameObjects of the scene (are only used when the scene is loaded & running)
@@ -65,10 +65,25 @@ public class Scene
     public GameProcess context = null;
 
     /**
+     * Creates an empty scene
+     */
+    public Scene() {
+        this.gameObjectSuppliers = new GameObjectSupplier[0];
+    }
+
+    /**
      * Creates a new scene to be used in the game
      * @param gameObjectSuppliers The GameObject (preferably lambda) suppliers
      */
     public Scene(GameObjectSupplier[] gameObjectSuppliers) {
+        this.gameObjectSuppliers = gameObjectSuppliers;
+    }
+
+    /**
+     * Sets the Game Object Suppliers for this scene.
+     * @param gameObjectSuppliers the supplier array containing all game objects of this scene
+     */
+    public void setGameObjects(GameObjectSupplier[] gameObjectSuppliers) {
         this.gameObjectSuppliers = gameObjectSuppliers;
     }
 
@@ -138,6 +153,14 @@ public class Scene
                             go.renderer.reset();
                         go.transform.unbindAll(context);
                     }
+
+        this.objects.forEach((go) -> {
+            if (!go.isDestroyed && go.isActive) {
+                go.transform.bind(this.context);
+                go.gizmosDraw();
+                go.transform.unbind(this.context);
+            }
+        });
 
         // really shitty implementation, but is accurate and for debug purposes only
         // also for some reason the lines display under everything and do not blend alpha with textures ????
@@ -213,10 +236,11 @@ public class Scene
      */
     protected void propagateMouseEvent(MouseEvent event) {
         for (List<GameObject> layer : objectsByLayer)
-            layer.forEach(go -> {
-                if (!go.isDestroyed && go.isActive)
-                    go.propagateMouseEvent(event);
-            });
+            if (layer != null)
+                layer.forEach(go -> {
+                    if (!go.isDestroyed && go.isActive)
+                        go.propagateMouseEvent(event);
+                });
     }
 
     /**
@@ -253,7 +277,7 @@ public class Scene
      * Dynamically adds a GameObject to the scene<br/>
      * Tip: Use Component#Instantiate()
      * @param gameObject the game object to add
-     * @see Component#Instantiate(GameObject)
+     * @see Component#instantiate(GameObject)
      */
     public void addGameObject(GameObject gameObject) {
         gameObject.scene = this;
@@ -271,7 +295,7 @@ public class Scene
      * Tip: Use Component#Instantiate()
      * @param gameObject the game object to add
      * @param parent the parent under which the newly instantiated game object will exit
-     * @see Component#Instantiate(GameObject)
+     * @see Component#instantiate(GameObject)
      */
     public void addGameObject(GameObject gameObject, GameObject parent) {
         gameObject.scene = this;
@@ -290,7 +314,7 @@ public class Scene
      * @param gameObject the game object to add
      * @param parentName the parent's name under which the newly instantiated game object will exist
      * @throws RuntimeException if the parent could not be found
-     * @see Component#Instantiate(GameObject)
+     * @see Component#instantiate(GameObject)
      * @see Scene#getGameObjectDeep(String)
      */
     public void addGameObject(GameObject gameObject, String parentName) {
