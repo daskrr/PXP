@@ -219,6 +219,6 @@ public class PlayerController extends Component
 ```
 
 This was just a short how-to for creating a game using the PXP engine. For an extensive documentation
-go to: https://cmgt.alexvasile.net/pxp/
+go to: https://cmgt.alexvasile.net/pxp/public/
 
 There lie the dreaded JavaDocs. Good luck!
