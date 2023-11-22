@@ -115,6 +115,17 @@ public class GameObject
         this.transform = new Transform() {{ gameObject = GameObject.this; }};
 
         this.name = name;
+        setComponents(components);
+
+        this.registerChildren(children);
+    }
+
+    /**
+     * Sets the components of this game object.<br/>
+     * This should only be used within a superclass' constructor! Anywhere outside that it might break functionality.
+     * @param components the components to set
+     */
+    protected void setComponents(Component[] components) {
         for (Component c : components) {
             this.components.add(c);
 
@@ -123,7 +134,23 @@ public class GameObject
 
             c.awake();
         }
+    }
 
+    /**
+     * Sets the children of this game object.<br/>
+     * This should only be used within a superclass' constructor! Anywhere outside that it might break functionality.
+     * @param children the children game objects
+     */
+    protected void setChildren(GameObject[] children) {
+        if (isLoaded) throw new RuntimeException("Cannot set children of a loaded Game Object! Use addGameObject()!");
+
+        this.registerChildren(children);
+    }
+
+    /**
+     * Acknowledges the children and sets their parent as this game object
+     */
+    private void registerChildren(GameObject[] children) {
         this.children = new ArrayList<>(List.of(children));
         this.children.forEach(go -> go.parent = this);
     }
@@ -575,6 +602,7 @@ public class GameObject
             this.components.forEach(Component::destroy);
             this.children.forEach(GameObject::destroy);
 
+            this.scene.context.collisionManager.unregister(this);
             this.scene.removeGameObject(this);
 
             this.isDestroyed = true;

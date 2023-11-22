@@ -74,7 +74,7 @@ public class GameProcess extends PApplet
     /**
      * The Collision Manager
      */
-    protected CollisionManager collisionManager;
+    public CollisionManager collisionManager;
 
     /**
      * Whether to forcibly draw all gizmos (may cause lag, as every component's gizmosDraw will be invoked every frame)

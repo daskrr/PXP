@@ -53,6 +53,26 @@ public class CollisionManager
     }
 
     /**
+     * Disables two layers' collision
+     * @param layers the layers to disable the collision of
+     */
+    public void setIgnoreLayers(Pair<String, String> layers) {
+        SwitchPair<Integer, Integer> ignored = new SwitchPair<>(LayerManager.getLayerId(layers.left), LayerManager.getLayerId(layers.right));
+        if (this.ignoredLayers.contains(ignored)) return;
+
+        this.ignoredLayers.add(ignored);
+    }
+
+    /**
+     * Enables the collision of two layers if it was previously set
+     * @param layers the layers to collide again
+     */
+    public void setDontIgnoreLayers(Pair<String, String> layers) {
+        SwitchPair<Integer, Integer> ignored = new SwitchPair<>(LayerManager.getLayerId(layers.left), LayerManager.getLayerId(layers.right));
+        this.ignoredLayers.remove(ignored);
+    }
+
+    /**
      * Runs every step and performs hit tests on all colliders
      */
     public void update() {

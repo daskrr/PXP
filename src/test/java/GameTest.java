@@ -2,12 +2,10 @@ import pxp.engine.core.*;
 import pxp.engine.core.component.*;
 import pxp.engine.core.component.ui.*;
 import pxp.engine.data.*;
-import pxp.engine.data.assets.AssetManager;
-import pxp.engine.data.assets.FontAsset;
-import pxp.engine.data.assets.SoundAsset;
-import pxp.engine.data.assets.SpriteAsset;
+import pxp.engine.data.assets.*;
 import pxp.engine.data.ui.Anchor;
 import pxp.engine.data.ui.InteractableTransition;
+import pxp.engine.data.ui.RenderMode;
 
 import java.util.ArrayList;
 
@@ -149,62 +147,62 @@ public class GameTest extends Game
 //                }) {{
 //                    transform = new Transform(new Vector2(0,0), new Vector3(0,0,0), new Vector2(1,1));
 //                }},
-//                () -> {
-//                    Image image = new Image(AssetManager.get("test", SpriteAsset.class)) {{
-//                        preserveAspect = true;
-//                    }};
-//
-//                    return new GameObject("Canvas", new Component[] { new Canvas(RenderMode.CAMERA) }, new GameObject[] {
-//                    new GameObject("textTest", new Component[] {
-//                        new Text("Text Test rfgehue It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).") {{
-//                            pivot = Pivot.CENTER;
-//                            font = AssetManager.get("fontTest", FontAsset.class);
-//                            fontStyle = FontStyle.BOLD;
-//                        }}
-//                    }) {{
-//                        transform = new RectTransform(
-//                            new Vector2(0,0),
-//                            new Vector3(0,0,0),
-//                            new Vector2(1,1),
-//                            new Vector2(150, 150),
-//                            Anchor.TOP_CENTER
-//                        );
-//                    }},
-//                    new GameObject("testButton", new Component[] {
-//                        new Button(ButtonTransition.SPRITE_SWAP) {{
-//                            targetImage = image;//new Image(AssetManager.get("long", SpriteAsset.class)) {{
+                () -> {
+                    Image image = new Image(AssetManager.get("test", SpriteAsset.class)) {{
+                        preserveAspect = true;
+                    }};
+
+                    return new GameObject("Canvas", new Component[] { new Canvas(RenderMode.CAMERA) }, new GameObject[] {
+                    new GameObject("textTest", new Component[] {
+                        new Text("Text Test rfgehue It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).") {{
+                            pivot = Pivot.CENTER;
+                            font = AssetManager.get("fontTest", FontAsset.class);
+                            fontStyle = FontStyle.BOLD;
+                        }}
+                    }) {{
+                        transform = new RectTransform(
+                            new Vector2(0,0),
+                            new Vector3(0,0,0),
+                            new Vector2(1,1),
+                            new Vector2(150, 150),
+                            Anchor.TOP_CENTER
+                        );
+                    }},
+                    new GameObject("testButton", new Component[] {
+                        new Button(InteractableTransition.SPRITE_SWAP) {{
+                            targetImage = image;//new Image(AssetManager.get("long", SpriteAsset.class)) {{
+//                                preserveAspect = true;
+//                            }};
+                            hoverSprite = AssetManager.get("long", SpriteAsset.class);
+                        }}
+                    }, new GameObject[] {
+                        new GameObject("testImage", new Component[] {
+//                            new Image(AssetManager.get("test", SpriteAsset.class)) {{
 ////                                preserveAspect = true;
-////                            }};
-//                            hoverSprite = AssetManager.get("long", SpriteAsset.class);
-//                        }}
-//                    }, new GameObject[] {
-//                        new GameObject("testImage", new Component[] {
-////                            new Image(AssetManager.get("test", SpriteAsset.class)) {{
-//////                                preserveAspect = true;
-//////                                pivot = Pivot.CENTER_LEFT;
-////                            }}
-//                            image
-//                        }) {{
-//                            transform = new RectTransform(
-//                                new Vector2(0,0),
-//                                new Vector3(0,0,0),
-//                                new Vector2(1,1),
-//                                new Vector2(200, 200),
-//                                Anchor.TOP_RIGHT
-//                            );
-//                        }}
-//                    }) {{
-//                        transform = new RectTransform(
-//                            new Vector2(250,0),
-//                            new Vector3(0,0,0),
-//                            new Vector2(1.5f,1),
-//                            new Vector2(200, 200),
-//                            Anchor.CENTER_LEFT
-//                        );
-//                    }}
-//                }) {{
-//                    transform = new RectTransform();
-//                }};},
+////                                pivot = Pivot.CENTER_LEFT;
+//                            }}
+                            image
+                        }) {{
+                            transform = new RectTransform(
+                                new Vector2(0,0),
+                                new Vector3(0,0,0),
+                                new Vector2(1,1),
+                                new Vector2(200, 200),
+                                Anchor.CENTER
+                            );
+                        }}
+                    }) {{
+                        transform = new RectTransform(
+                            new Vector2(250,0),
+                            new Vector3(0,0,0),
+                            new Vector2(1.5f,1),
+                            new Vector2(200, 200),
+                            Anchor.CENTER
+                        );
+                    }}
+                }) {{
+                    transform = new RectTransform();
+                }};},
                 () -> new GameObject("player", new Component[] {
                     new SpriteRenderer() {{
                         color = new Color(255,255,255, 100);
