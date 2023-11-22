@@ -159,6 +159,16 @@ class Player extends GameObject
                 // ... children can be placed here
             }
         );
+        
+        // or this can be done using helper methods in case
+        // not everything can be placed into super()
+
+        this.setComponents(new Component[] {
+            // ...
+        });
+        this.setChildren(new GameObject[] {
+           // ...     
+        });
     }
 }
 ```
