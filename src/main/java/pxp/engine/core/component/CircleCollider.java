@@ -44,7 +44,7 @@ public class CircleCollider extends Collider
 
     @Override
     protected void updateShape() {
-        this.shape = new Circle(Vector2.add(this.transform().getWorldPosition(), this.centerOffset), this.radius);
+        this.shape = new Circle(this.transform().localToWorld(this.centerOffset), this.radius);
     }
 
     @Override

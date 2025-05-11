@@ -4,6 +4,7 @@ import pxp.engine.data.Vector2;
 import pxp.engine.data.Vector3;
 import processing.core.PMatrix3D;
 import processing.core.PVector;
+import pxp.util.Mathf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,9 +188,9 @@ public class Transform
 
         mat.translate(position.x, position.y, zPosition);
 
-        mat.rotateX(this.rotation.x);
-        mat.rotateY(this.rotation.y);
-        mat.rotateZ(this.rotation.z);
+        mat.rotateX(Mathf.degreesToRadians(this.rotation.x));
+        mat.rotateY(Mathf.degreesToRadians(this.rotation.y));
+        mat.rotateZ(Mathf.degreesToRadians(this.rotation.z));
 
         mat.scale(this.scale.x, this.scale.y, 1);
 
@@ -242,8 +243,8 @@ public class Transform
         PVector pLocal = local.toPVector();
 
         // we use get matrix to get the total matrix transformation (excluding our own)
-        PMatrix3D mat = this.getMatrix();
-        mat.mult(pLocal, pLocal); // then multiply the local position by the matrix
+        PMatrix3D mat = this.getLocalMatrix();
+        pLocal = mat.mult(pLocal, pLocal); // then multiply the local position by the matrix
 
         return Vector2.fromPVector(pLocal);
     }
@@ -254,14 +255,19 @@ public class Transform
      * @return the local position
      */
     public Vector2 worldToLocal(Vector2 world) {
-        // clone so no fuckery happens
-        world = world.clone();
+        PVector pWorld = world.toPVector();
 
-        // subtract the object's world position
-        world.subtract(this.getWorldPosition());
+        // Get the complete transformation matrix for this object
+        PMatrix3D mat = this.getMatrix();
+
+        // Invert the matrix to reverse the transformation
+        mat.invert();
+
+        // Multiply the world position by the inverted matrix
+        pWorld = mat.mult(pWorld, pWorld);
 
         // and we got ourselves a nice local position
-        return world;
+        return Vector2.fromPVector(pWorld);
     }
 
 

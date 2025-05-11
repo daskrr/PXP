@@ -74,11 +74,11 @@ public abstract class Collider extends Component
             this.transform().position = Vector2.add(this.transform().lastPosition, finalVelocity);
             this.currentVelocity = finalVelocity;
         }
-        else {
-            float x = Mathf.lerpUnclamped(this.transform().lastPosition.x, this.transform().position.x, toi);
-            float y = Mathf.lerpUnclamped(this.transform().lastPosition.y, this.transform().position.y, toi);
-            this.transform().position = new Vector2(x, y);
-        }
+//        else {
+//            float x = Mathf.lerpUnclamped(this.transform().lastPosition.x, this.transform().position.x, toi);
+//            float y = Mathf.lerpUnclamped(this.transform().lastPosition.y, this.transform().position.y, toi);
+//            this.transform().position = new Vector2(x, y);
+//        }
 
         this.updateShape();
     }

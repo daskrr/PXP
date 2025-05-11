@@ -8,6 +8,7 @@ import processing.core.PApplet;
 import processing.event.MouseEvent;
 import processing.opengl.PGraphicsOpenGL;
 import pxp.engine.data.*;
+import pxp.logging.Debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -387,7 +388,7 @@ public class GameProcess extends PApplet
         // destroy current scene
         getCurrentScene().destroy();
         // prevent concurrent & fuckery
-        nextFrame(() -> {
+        nextFrame(() -> nextFrame(() -> { // I know, it's not the best option, but the loading of the new scene needs to happen after the deletion
             // set the current scene
             currentScene = index;
 
@@ -401,7 +402,7 @@ public class GameProcess extends PApplet
 
             // finally, load the scene
             getCurrentScene().load();
-        });
+        }));
     }
 
 

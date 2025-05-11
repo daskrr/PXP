@@ -1,11 +1,14 @@
+import processing.event.MouseEvent;
 import pxp.engine.core.*;
 import pxp.engine.core.component.*;
 import pxp.engine.core.component.ui.*;
 import pxp.engine.data.*;
 import pxp.engine.data.assets.*;
+import pxp.engine.data.event.PXPSingleEvent;
 import pxp.engine.data.ui.Anchor;
 import pxp.engine.data.ui.InteractableTransition;
 import pxp.engine.data.ui.RenderMode;
+import pxp.logging.Debug;
 
 import java.util.ArrayList;
 
@@ -174,6 +177,12 @@ public class GameTest extends Game
 //                                preserveAspect = true;
 //                            }};
                             hoverSprite = AssetManager.get("long", SpriteAsset.class);
+                            onClick = new PXPSingleEvent<>() {
+                                @Override
+                                public void invoke(MouseEvent mouseEvent) {
+                                    Debug.log("click");
+                                }
+                            };
                         }}
                     }, new GameObject[] {
                         new GameObject("testImage", new Component[] {

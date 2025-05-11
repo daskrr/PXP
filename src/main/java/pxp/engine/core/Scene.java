@@ -224,10 +224,9 @@ public class Scene
     public void unregisterSortingLayer(GameObject gameObject) {
         if (objectsByLayer != null)
             for (List<GameObject> layer : objectsByLayer)
-                if (layer != null) {
-                    layer.remove(gameObject);
-                    break;
-                }
+                if (layer != null)
+                    if (layer.remove(gameObject))
+                        break;
     }
 
     /**
@@ -235,12 +234,13 @@ public class Scene
      * @param event the event to propagate
      */
     protected void propagateMouseEvent(MouseEvent event) {
-        for (List<GameObject> layer : objectsByLayer)
-            if (layer != null)
-                layer.forEach(go -> {
-                    if (!go.isDestroyed && go.isActive)
-                        go.propagateMouseEvent(event);
-                });
+        if (objectsByLayer != null)
+            for (List<GameObject> layer : objectsByLayer)
+                if (layer != null)
+                    layer.forEach(go -> {
+                        if (!go.isDestroyed && go.isActive)
+                            go.propagateMouseEvent(event);
+                    });
     }
 
     /**
@@ -403,7 +403,7 @@ public class Scene
             objectsByLayer = null;
             loaded = false;
             mainCam = null; // AAAAAAAAAAAAAAH not resetting this took me 30 minutes of debugging hash codes ʘ‿ʘ
-            context = null;
+            // context = null; // this just invites NullPointers AAAAH
         });
     }
 }

@@ -2,6 +2,7 @@ package pxp.engine.core.component;
 
 import pxp.engine.data.Vector2;
 import pxp.engine.data.collision.BoundingBox;
+import pxp.engine.data.collision.Box;
 import pxp.util.Pointer;
 
 /**
@@ -44,7 +45,7 @@ public class BoxCollider extends Collider
 
     @Override
     protected void updateShape() {
-        this.shape = new BoundingBox(Vector2.add(this.transform().getWorldPosition(), this.centerOffset), this.halfSize);
+        this.shape = new Box(this.centerOffset, this.halfSize, this.transform());
     }
 
     @Override

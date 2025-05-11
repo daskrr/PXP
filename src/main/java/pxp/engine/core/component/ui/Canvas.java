@@ -106,6 +106,9 @@ public class Canvas extends UIRenderer
 
     @Override
     public void setSortingLayer(String layer) {
-        throw new IllegalStateException("Cannot set sorting layer of Canvas!");
+        if (this.renderMode == RenderMode.CAMERA)
+            throw new IllegalStateException("Cannot set sorting layer of Canvas!");
+        else
+            super.setSortingLayer(layer);
     }
 }

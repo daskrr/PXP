@@ -55,12 +55,18 @@ public class CollisionGameTest extends Game {
         }, () -> new GameObject("static", new Component[]{new SpriteRenderer((SpriteAsset) AssetManager.get("test", SpriteAsset.class)) {
             {
                 this.setSortingLayer("Default");
-                this.flipX = true;
-                this.flipY = true;
+                this.flipX = false;
+                this.flipY = false;
             }
-        }}) {
+        },
+            new BoxCollider(new Vector2(0.0F, 0.0F), new Vector2(2.0F, 4.0F)) {
             {
-                this.transform = new Transform(new Vector2(0.0F, 0.0F), new Vector3(0.0F, 0.0F, 0.0F), new Vector2(1.0F, 1.0F));
+//                this.trigger = true;
+            }
+        }
+        }) {
+            {
+                this.transform = new Transform(new Vector2(0.0F, 0.0F), new Vector3(0.0F, 0.0F, 45.0F), new Vector2(1.0F, 1.0F));
             }
         }, () -> new GameObject("player", new Component[]{new SpriteRenderer() {
             {
@@ -73,51 +79,67 @@ public class CollisionGameTest extends Game {
                 this.innerRadius = 10.0F;
                 this.setLoop(true);
             }
-        }, new CircleCollider(new Vector2(0.0F, 0.0F), 2f) {
+        },
+//        new CircleCollider(new Vector2(0.0F, 0.0F), 2f) {
+//            {
+//                this.layer = LayerMask.nameToId("layer1");
+//            }
+//        },
+        new BoxCollider(new Vector2(0.0F, 0.0F), new Vector2(1f,1f)) {
             {
                 this.layer = LayerMask.nameToId("layer1");
             }
-        }}) {
+        }
+
+        }) {
             {
                 this.transform = new Transform(new Vector2(3.0F, 3.0F), new Vector3(0.0F, 0.0F, 0.0F), new Vector2(1.0F, 1.0F));
             }
-        }, () -> new GameObject("test2", new Component[]{new SpriteRenderer((SpriteAsset) AssetManager.get("test", SpriteAsset.class)) {
-            {
-                this.setSortingLayer("Default");
-                this.flipX = true;
-                this.flipY = true;
-            }
-        }, new CircleCollider(new Vector2(0.0F, 0.0F), 2.0F) {
-            {
-                this.layer = LayerMask.nameToId("layer1");
-            }
-        }}) {
-            {
-                this.transform = new Transform(new Vector2(15.5F, 5.0F), new Vector3(0.0F, 0.0F, 0.0F), new Vector2(1.0F, 1.0F));
-            }
-        }, () -> new GameObject("test3", new Component[]{new SpriteRenderer((SpriteAsset) AssetManager.get("test", SpriteAsset.class)) {
-            {
-                this.setSortingLayer("Default");
-                this.flipX = true;
-                this.flipY = true;
-            }
-        }, new BoxCollider(new Vector2(0.0F, 0.0F), new Vector2(2.0F, 4.0F)) {
-            {
-//                this.trigger = true;
-            }
-        }}) {
-            {
-                this.transform = new Transform(new Vector2(10.5F, 4.0F), new Vector3(0.0F, 0.0F, 0.0F), new Vector2(1.0F, 1.0F));
-            }
-        }}), new Scene(new GameObjectSupplier[]{() -> new GameObject("cam", new Component[]{new Camera(8.0F) {
-            {
-                this.setFollowing("player");
-            }
-        }}) {
-            {
-                this.transform = new Transform(new Vector2(0.0F, 0.0F));
-            }
-        }})};
+        }
+
+//        ,() -> new GameObject("test2", new Component[]{new SpriteRenderer((SpriteAsset) AssetManager.get("test", SpriteAsset.class)) {
+//            {
+//                this.setSortingLayer("Default");
+//                this.flipX = true;
+//                this.flipY = true;
+//            }
+//        }, new CircleCollider(new Vector2(0.0F, 0.0F), 2.0F) {
+//            {
+//                this.layer = LayerMask.nameToId("layer1");
+//            }
+//        }}) {
+//            {
+//                this.transform = new Transform(new Vector2(15.5F, 5.0F), new Vector3(0.0F, 0.0F, 0.0F), new Vector2(1.0F, 1.0F));
+//            }
+//        }, () -> new GameObject("test3", new Component[]{new SpriteRenderer((SpriteAsset) AssetManager.get("test", SpriteAsset.class)) {
+//            {
+//                this.setSortingLayer("Default");
+//                this.flipX = true;
+//                this.flipY = true;
+//            }
+//        }, new BoxCollider(new Vector2(0.0F, 0.0F), new Vector2(2.0F, 4.0F)) {
+//            {
+////                this.trigger = true;
+//            }
+//        }}) {
+//            {
+//                this.transform = new Transform(new Vector2(10.5F, 4.0F), new Vector3(0.0F, 0.0F, 0.0F), new Vector2(1.0F, 1.0F));
+//            }
+//        }
+
+        })
+
+
+//        , new Scene(new GameObjectSupplier[]{() -> new GameObject("cam", new Component[]{new Camera(8.0F) {
+//            {
+//                this.setFollowing("player");
+//            }
+//        }}) {
+//            {
+//                this.transform = new Transform(new Vector2(0.0F, 0.0F));
+//            }
+//        }})
+        };
     }
 
     public static void main(String[] args) {

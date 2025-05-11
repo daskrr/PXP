@@ -9,6 +9,7 @@ import pxp.engine.data.CollisionEvent;
 import pxp.engine.data.TriggerCollisionEvent;
 import pxp.engine.data.Vector2;
 import processing.event.MouseEvent;
+import pxp.logging.Debug;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -292,6 +293,21 @@ public class GameObject
             }
         });
     }
+    /**
+     * Removes and destroys all child game objects of this game object's<br/>
+     * <i>If the game object doesn't exist, they will not be destroyed!</i>
+     */
+    public void removeGameObjects() {
+        if (!this.isLoaded) throw new RuntimeException("This GameObject was not yet loaded!");
+
+        GameProcess.nextFrame(() -> {
+            this.children.forEach(o -> {
+                this.scene.removeGameObject(o);
+                o.destroy();
+            });
+            this.children.clear();
+        });
+    }
 
     /**
      * Dynamically adds a component to this game object<br/>
@@ -524,10 +540,12 @@ public class GameObject
             }
         }
 
-        this.children.forEach(child -> {
-            if (!child.isDestroyed && child.isActive)
-                child.propagateMouseEvent(event);
-        });
+        // this shouldn't further propagate the mouse event as it is already propagated to all the visible elements
+        // TODO needs more testing
+//        this.children.forEach(child -> {
+//            if (!child.isDestroyed && child.isActive)
+//                child.propagateMouseEvent(event);
+//        });
     }
 
     /**
@@ -602,7 +620,12 @@ public class GameObject
             this.components.forEach(Component::destroy);
             this.children.forEach(GameObject::destroy);
 
-            this.scene.context.collisionManager.unregister(this);
+            // sometimes something happens, only god knows at this point
+            if (this.scene.context == null || this.scene.context.collisionManager == null)
+                GameProcess.getInstance().collisionManager.unregister(this);
+            else
+                this.scene.context.collisionManager.unregister(this);
+
             this.scene.removeGameObject(this);
 
             this.isDestroyed = true;

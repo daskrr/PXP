@@ -8,7 +8,9 @@ import pxp.util.Pointer;
 
 /**
  * An axis aligned rectangle with the ability to calculate its size and hit test other {@link Shape}s.
+ * @deprecated in favour of {@link Box}. This uses god knows what collision detection maths and Box uses SAT. SAT is better :D
  */
+@Deprecated()
 public class BoundingBox extends Shape {
     public final Vector2 center;
     public final Vector2 halfSize;

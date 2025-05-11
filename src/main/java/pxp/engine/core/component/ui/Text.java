@@ -4,6 +4,7 @@ import pxp.annotations.LinkFieldInInspector;
 import pxp.annotations.LinkState;
 import pxp.annotations.LinkType;
 import pxp.engine.core.RectTransform;
+import pxp.engine.data.Color;
 import pxp.engine.data.Pivot;
 import pxp.engine.data.Vector2;
 import pxp.engine.data.assets.AssetManager;
@@ -110,6 +111,12 @@ public class Text extends UIRenderer
         // the +1 is for the automatic version, as the size is calculated and the text is cut off due to it being the same width/height
         ctx().text(text, pivot.x, pivot.y, textSize.x + 1, textSize.y + 1);
     }
+
+//    @Override
+//    public void gizmosDraw() {
+//        ctx().fill(Color.white().getHex());
+//        ctx().rectMode();
+//    }
 
     @LinkFieldInInspector(name = "text", type = LinkType.SETTER, state = LinkState.BOTH)
     public void setText(String text) {

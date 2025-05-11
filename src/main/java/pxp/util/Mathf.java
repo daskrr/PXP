@@ -244,6 +244,30 @@ public class Mathf
     public static float degreesToRadians(float angle) {
         return (float) (angle * Math.PI / 180);
     }
+    public static float radiansToDegrees(float radians) {
+        return radians * (180.0f / (float) Math.PI);
+    }
+
+    public static float closestNumber(float num1, float num2, float target) {
+        // Calculate the absolute difference between target and both numbers
+        float diff1 = abs(target - num1);
+        float diff2 = abs(target - num2);
+
+        // Return the number with the smaller difference
+        if (diff1 < diff2) {
+            return num1;
+        } else {
+            return num2;
+        }
+    }
+
+    public static float randomRange(float min, float max) {
+        return (float) ((Math.random() * ((max + 1) - min)) + min);
+    }
+
+    public static int randomRange(int min, int max) {
+        return (int) ((Math.random() * ((max + 1) - min)) + min);
+    }
 }
 
 

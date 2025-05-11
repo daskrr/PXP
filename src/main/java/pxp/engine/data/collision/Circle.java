@@ -29,9 +29,9 @@ public class Circle extends Shape
     public boolean hitTest(Shape other, Vector2 velocity, Pointer<Vector2> reflectVelocity, Pointer<Float> toiOut, Vector2 contactPoint) {
         if (other instanceof Circle circle)
             return this.hitTest(circle, velocity, reflectVelocity, toiOut, contactPoint);
-        else if (other instanceof BoundingBox aabb) {
+        else if (other instanceof Box box) {
             Pointer<Vector2> _reflectVelocity = new Pointer<>(null);
-            boolean hit = aabb.hitTest(this, velocity, _reflectVelocity, toiOut, contactPoint);
+            boolean hit = box.hitTest(this, velocity, _reflectVelocity, toiOut, contactPoint);
 
             if (_reflectVelocity.value != null)
                 _reflectVelocity.value.multiply(-1.0F);

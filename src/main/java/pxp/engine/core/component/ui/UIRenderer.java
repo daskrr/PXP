@@ -19,10 +19,10 @@ public abstract class UIRenderer extends PivotedRenderer
         gameObject.transform = transform().toRectTransform();
     }
 
-    @Override
-    public void setSortingLayer(String layer) {
-        throw new IllegalStateException("Cannot set sorting layer of a UI element!");
-    }
+//    @Override
+//    public void setSortingLayer(String layer) {
+//        throw new IllegalStateException("Cannot set sorting layer of a UI element!");
+//    }
 
     /**
      * Internal method to bypass sorting layer restriction for UI elements and set the sorting layer (used by Canvas)

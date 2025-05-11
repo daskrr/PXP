@@ -8,6 +8,22 @@ import processing.core.PVector;
  */
 public class Vector2
 {
+    public static Vector2 zero() {
+        return new Vector2(0f, 0f);
+    }
+    public static Vector2 left() {
+        return new Vector2(-1, 0f);
+    }
+    public static Vector2 right() {
+        return new Vector2(1f, 0f);
+    }
+    public static Vector2 up() {
+        return new Vector2(0f, -1f);
+    }
+    public static Vector2 down() {
+        return new Vector2(0f, 1f);
+    }
+
     /**
      * The x component of the vector
      */
@@ -74,21 +90,52 @@ public class Vector2
         return x*x + y*y;
     }
 
+    public void setMagnitude(float newMagnitude) {
+        float mag = getMagnitude();
+        if (mag != 0) { // Prevent division by zero
+            normalize(); // Make the vector length 1
+            scale(newMagnitude); // Scale to the desired magnitude
+        } else {
+            // If the vector has no direction, set to (newMagnitude, 0)
+            x = newMagnitude;
+            y = 0;
+        }
+    }
+
+    // Scale the vector by a scalar
+    public void scale(float scalar) {
+        x *= scalar;
+        y *= scalar;
+    }
+
+    // Limit the vector to a maximum length
+    public void limit(float max) {
+        float mag = getMagnitude();
+        if (mag > max) {
+            normalize();
+            scale(max);
+        }
+    }
+
     /**
      * Sets this vector's x and y to the specified values
      * @param x the x component to set
      * @param y the y component to set
      */
-    public void set(float x, float y) {
+    public Vector2 set(float x, float y) {
         this.x = x;
         this.y = y;
+
+        return this;
     }
     /**
      * Sets this vector's x and y to the ones of another vector
      */
-    public void set(Vector2 other) {
+    public Vector2 set(Vector2 other) {
         this.x = other.x;
         this.y = other.y;
+
+        return this;
     }
 
     /**
@@ -104,60 +151,86 @@ public class Vector2
      * Adds another vector to this one
      * @param other vector to add
      */
-    public void add(Vector2 other) {
+    public Vector2 add(Vector2 other) {
         this.x += other.x;
         this.y += other.y;
+
+        return this;
     }
     /**
      * Adds a number to both x and y
      * @param n the number to add
      */
-    public void add(float n) {
+    public Vector2 add(float n) {
         this.x += n;
         this.y += n;
+
+        return this;
     }
 
     /**
      * Subtracts another vector from this one
      * @param other vector to subtract
      */
-    public void subtract(Vector2 other) {
+    public Vector2 subtract(Vector2 other) {
         this.x -= other.x;
         this.y -= other.y;
+
+        return this;
     }
     /**
      * Subtracts a number from both x and y
      * @param n the number to subtract
      */
-    public void subtract(float n) {
+    public Vector2 subtract(float n) {
         this.x -= n;
         this.y -= n;
+
+        return this;
     }
     /**
      * Multiplies this vector by a number
      * @param n the number to multiply with
      */
-    public void multiply(float n) {
+    public Vector2 multiply(float n) {
         this.x *= n;
         this.y *= n;
+
+        return this;
     }
     /**
      * Multiplies this vector by another vector (x1*x2, y1*y2)
      * @param vec the vector to multiply with
      */
-    public void multiply(Vector2 vec) {
+    public Vector2 multiply(Vector2 vec) {
         this.x *= vec.x;
         this.y *= vec.y;
+
+        return this;
     }
     /**
      * Divides this vector by a number (non-zero)
      * @param n the number to divide by
      */
-    public void divide(float n) {
-        if (n == 0f) return;
+    public Vector2 divide(float n) {
+        if (n == 0f) return this;
 
         this.x /= n;
         this.y /= n;
+
+        return this;
+    }
+    /**
+     * Divides this vector by another vector (x1/x2, y1/y2)
+     * @param vec the vector to divide by
+     */
+    public Vector2 divide(Vector2 vec) {
+        if (vec.x == 0 || vec.y == 0) return this;
+
+        this.x /= vec.x;
+        this.y /= vec.y;
+
+        return this;
     }
 
     /**
@@ -197,7 +270,25 @@ public class Vector2
     public Vector2 abs() {
         this.x = Mathf.abs(this.x);
         this.y = Mathf.abs(this.y);
+
         return this;
+    }
+
+    public Vector2 round() {
+        this.x = Mathf.round(this.x);
+        this.y = Mathf.round(this.y);
+
+        return this;
+    }
+    public Vector2 ceil() {
+        this.x = Mathf.ceil(this.x);
+        this.y = Mathf.ceil(this.y);
+
+        return this;
+    }
+
+    public Vector2 perpendicular() {
+        return new Vector2(-this.y, this.x);
     }
 
     /**
@@ -207,6 +298,40 @@ public class Vector2
      */
     public float distance(Vector2 other) {
         return Mathf.sqrt(Mathf.pow(other.x - this.x, 2) + Mathf.pow(other.y - this.y, 2));
+    }
+
+    public boolean inside(Vector2 corner1, Vector2 corner2) {
+        return
+                this.x >= corner1.x
+                        && this.y >= corner1.y
+                        && this.x <= corner2.x
+                        && this.y <= corner2.y;
+    }
+
+    public float toRotationAngle() {
+        Vector2 vec = this.getNormalized();
+
+        float angleRadians = Mathf.atan2(vec.y, vec.x);
+        float angleDegrees = Mathf.radiansToDegrees(angleRadians);
+        if (angleDegrees < 0) {
+            angleDegrees += 360;
+        }
+
+        return angleDegrees;
+    }
+
+    public static Vector2 projectPointOntoLine(Vector2 point, Vector2 lineStart, Vector2 lineEnd) {
+        Vector2 lineDirection = Vector2.vector(lineStart, lineEnd);
+        Vector2 lineToPoint = Vector2.vector(lineStart, point);
+
+        // Calculate projection scalar
+        float t = lineToPoint.dot(lineDirection) / lineDirection.dot(lineDirection);
+
+        // Clamp 't' to [0, 1] to ensure the point lies on the segment
+        t = Mathf.clamp01(t);
+
+        // Return the projected point
+        return Vector2.add(lineStart, lineDirection.multiply(t));
     }
 
     /**
@@ -346,6 +471,11 @@ public class Vector2
 
     public static Vector2 fromPVector(PVector vec) {
         return new Vector2(vec.x, vec.y);
+    }
+
+    public static Vector2 fromDegrees(float angleInDegrees) {
+        float angleInRadians = Mathf.degreesToRadians(angleInDegrees);
+        return new Vector2(Mathf.cos(angleInRadians), Mathf.sin(angleInRadians));
     }
 
 
